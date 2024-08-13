@@ -8,7 +8,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 
-import { ValidationException } from '../filters/validation-exception.filter';
+import { ValidationException } from '../common/validation-exception.filter';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
