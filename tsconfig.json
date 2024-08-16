@@ -18,8 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@users/*": ["src/users/*"],
-      "@auth/*": ["src/auth/*"]
+      "~/*": ["src/*"]
     }
   }
 }

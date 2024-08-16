@@ -3,5 +3,5 @@ import { Role } from './role.enum';
 export type JWTPayload = {
   // make sub userId
   sub: string;
-  role: Role;
+  roles: Role[];
 };

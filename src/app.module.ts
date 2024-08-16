@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -18,11 +19,22 @@ import { TransformInterceptor } from './interceptors/transform.interceptor';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate }),
+    MongooseModule.forRootAsync({
+      useFactory: async (config: ConfigService) => {
+        const uri = config
+          .get<string>('MONGO_URI')
+          .replace('<PASSWORD>', config.get<string>('MONGO_PASSWORD'));
+
+        return {
+          uri,
+        };
+      },
+      inject: [ConfigService],
+    }),
     AuthModule,
     UsersModule,
     StoreModule,
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_PIPE,
