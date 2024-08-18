@@ -6,7 +6,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { StoreModule } from './store/store.module';
 
 import { validate } from './env.validate';
 
@@ -15,6 +14,7 @@ import { GlobalExceptionsFilter } from './common/global-exception.filter';
 
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
+import { StoreModule } from './stores/store.module';
 
 @Module({
   imports: [
@@ -52,4 +52,4 @@ import { TransformInterceptor } from './interceptors/transform.interceptor';
     JwtService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

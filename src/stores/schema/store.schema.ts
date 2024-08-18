@@ -10,13 +10,13 @@ export class Store {
     name: string;
 
     @Prop({ type: String })
-    description?: string;
+    description: string;
 
     /**
      * Owner of the store
      */
     @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
-    store: Types.ObjectId;
+    owner: Types.ObjectId;
 
 }
 
