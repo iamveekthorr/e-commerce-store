@@ -18,9 +18,15 @@ export class StoreService {
         private readonly storeModel: Model<Store>,
     ) { }
 
-    async createStore(createStoreDTO: CreateStoreDTO): Promise<Store> {
+    async createStore(createStoreDTO: CreateStoreDTO) {
         const newStore = new this.storeModel(createStoreDTO);
-        return newStore.save();
+
+        await newStore.save();
+
+        return {
+            message: "Store created succesfully"
+        }
+
     }
 
     async updateStore(id: string, updateStoreDTO: UpdateStoreDTO): Promise<Store> {
@@ -34,6 +40,24 @@ export class StoreService {
         }
 
         return existingStore;
+    }
+
+    async getAllStores() {
+
+    }
+
+    async getMyStore(id: string) {
+        const doc = await this.storeModel.findOne({ owner: id })
+
+        const myStore = doc.toObject();
+
+        return {
+            name: myStore.name,
+            description: myStore.description,
+            id: myStore._id.toString(),
+            ownner: myStore.owner
+        };
+
     }
 
 }
