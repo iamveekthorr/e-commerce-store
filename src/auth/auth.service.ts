@@ -87,10 +87,7 @@ export class AuthServiceService {
     const existingUser = await this.userModel.findOne({ email });
 
     if (existingUser) {
-      throw new AppError(
-        'Email already exists!. Please contact Admin for help',
-        HttpStatus.CONFLICT,
-      );
+      throw new AppError('Email already exists!.', HttpStatus.CONFLICT);
     }
 
     const SALT = await bcrypt.genSalt();
