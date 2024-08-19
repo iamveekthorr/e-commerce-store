@@ -8,48 +8,53 @@ import { AppError } from '~/common/app-error.common';
 
 @Injectable()
 export class StoreService {
-  constructor(
-    @InjectModel(Store.name)
-    private readonly storeModel: Model<Store>,
-  ) {}
+    constructor(
+        @InjectModel(Store.name)
+        private readonly storeModel: Model<Store>,
+    ) { }
 
-  async createStore(createStoreDTO: CreateStoreDTO) {
-    const newStore = new this.storeModel(createStoreDTO);
+    async createStore(createStoreDTO: CreateStoreDTO) {
+        const newStore = new this.storeModel(createStoreDTO);
 
-    await newStore.save();
+        await newStore.save();
 
-    return {
-      message: 'Store created successfully',
-    };
-  }
-
-  async updateStore(
-    id: string,
-    updateStoreDTO: UpdateStoreDTO,
-  ): Promise<Store> {
-    const existingStore = await this.storeModel
-      .findByIdAndUpdate(id, updateStoreDTO, { new: true })
-      .exec();
-
-    if (!existingStore) {
-      throw new AppError(`Store with ID ${id} not found`, HttpStatus.NOT_FOUND);
+        return {
+            message: 'Store created successfully',
+        };
     }
 
-    return existingStore;
-  }
+    async updateStore(
+        id: string,
+        updateStoreDTO: UpdateStoreDTO,
+    ): Promise<Store> {
+        const existingStore = await this.storeModel
+            .findByIdAndUpdate(id, updateStoreDTO, { new: true })
+            .exec();
 
-  async getAllStores() {}
+        if (!existingStore) {
+            throw new AppError(`Store with ID ${id} not found`, HttpStatus.NOT_FOUND);
+        }
 
-  async getMyStore(id: string) {
-    const myStore = await this.storeModel.findOne({ owner: id });
+        return existingStore;
+    }
 
-    // TODO: check if the store exists before returning.
+    async getAllStores() { }
 
-    return {
-      name: myStore.name,
-      description: myStore.description,
-      id: myStore._id.toString(),
-      owner: myStore.owner,
-    };
-  }
+    async getMyStore(id: string) {
+        const myStore = await this.storeModel.findOne({ owner: id });
+
+        if (!myStore) {
+            throw new AppError(
+                `Store with ID ${id} not found`,
+                HttpStatus.NOT_FOUND
+            );
+
+        }
+        return {
+            name: myStore.name,
+            description: myStore.description,
+            id: myStore._id.toString(),
+            owner: myStore.owner,
+        };
+    }
 }
