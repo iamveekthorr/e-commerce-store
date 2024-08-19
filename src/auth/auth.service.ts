@@ -16,7 +16,7 @@ import { AppError } from '~/common/app-error.common';
 import { ErrorMessage } from '~/common/error-messages.enum';
 
 @Injectable()
-export class AuthServiceService {
+export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,

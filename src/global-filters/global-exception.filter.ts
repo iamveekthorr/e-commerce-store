@@ -10,8 +10,8 @@ import { JsonWebTokenError } from '@nestjs/jwt';
 
 import { Environment } from '../env.validate';
 import { ValidationException } from './validation-exception.filter';
-import { AppError } from './app-error.common';
-import { ErrorMessage } from './error-messages.enum';
+import { AppError } from '../common/app-error.common';
+import { ErrorMessage } from '../common/error-messages.enum';
 
 @Catch()
 export class GlobalExceptionsFilter implements ExceptionFilter {
