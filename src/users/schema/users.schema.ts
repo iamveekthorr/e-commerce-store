@@ -6,7 +6,17 @@ import { Role } from '~/auth/role.enum';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+const SCHEMA_OPTIONS = {
+  virtuals: true,
+  transform: true,
+};
+
+@Schema({
+  toJSON: { ...SCHEMA_OPTIONS },
+  toObject: {
+    ...SCHEMA_OPTIONS,
+  },
+})
 export class User {
   @Prop({ required: true, type: String, unique: true })
   email: string;

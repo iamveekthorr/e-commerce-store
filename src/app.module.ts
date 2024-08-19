@@ -10,7 +10,7 @@ import { UsersModule } from './users/users.module';
 import { validate } from './env.validate';
 
 import { ValidationPipe } from './pipes/validation.pipe';
-import { GlobalExceptionsFilter } from './common/global-exception.filter';
+import { GlobalExceptionsFilter } from './global-filters/global-exception.filter';
 
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
@@ -52,4 +52,4 @@ import { StoreModule } from './stores/store.module';
     JwtService,
   ],
 })
-export class AppModule { }
+export class AppModule {}
