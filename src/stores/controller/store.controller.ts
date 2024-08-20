@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '~/auth/guards/auth.guard';
 import { CurrentUser } from '~/auth/decorators/current-user.decorator';
-import { JWTPayload } from '~/auth/jwt-payload.type';
 import { Roles } from '~/auth/decorators/roles.decorator';
 import { Role } from '~/auth/role.enum';
 import { RolesGuard } from '~/auth/guards/role.guard';
