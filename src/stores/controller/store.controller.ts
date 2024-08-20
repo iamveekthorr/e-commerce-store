@@ -41,7 +41,7 @@ export class StoreController {
 
     @Get()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.USER)
+    @Roles(Role.SUPER_ADMIN)
     async getAllStores() {
         return this.storeService.getAllStores();
     }
