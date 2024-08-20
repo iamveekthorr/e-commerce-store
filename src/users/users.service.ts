@@ -8,10 +8,9 @@ import { InjectModel } from '@nestjs/mongoose';
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
-  ) {}
+  ) { }
   async getUserById(id: string) {
-    const user = await this.userModel.findOne({ _id: id });
-
-    return { id: user, ...user };
+    const user = (await this.userModel.findOne({ _id: id }));
+    return { ...user };
   }
 }

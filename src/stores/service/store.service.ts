@@ -23,38 +23,75 @@ export class StoreService {
         };
     }
 
-    async updateStore(
-        id: string,
-        updateStoreDTO: UpdateStoreDTO,
-    ): Promise<Store> {
-        const existingStore = await this.storeModel
-            .findByIdAndUpdate(id, updateStoreDTO, { new: true })
-            .exec();
+    /**
+     * only for super-admin
+     */
+    async getAllStores() {
+        const stores = await this.storeModel.find().lean().exec();
 
-        if (!existingStore) {
-            throw new AppError(`Store with ID ${id} not found`, HttpStatus.NOT_FOUND);
-        }
+        return stores.map(store => ({
+            ...store,
+            _id: store._id.toString(),
+        }));
 
-        return existingStore;
     }
 
-    async getAllStores() { }
-
+    /**
+     * allow a retailer get their store details
+     */
     async getMyStore(id: string) {
-        const myStore = await this.storeModel.findOne({ owner: id });
+        const stores = await this.storeModel.find({ owner: '66bf4d123627d4e6dff790c5' });
 
-        if (!myStore) {
+        if (!stores) {
             throw new AppError(
-                `Store with ID ${id} not found`,
+                `No stores found for user with ID ${id}`,
                 HttpStatus.NOT_FOUND
             );
-
         }
+
+        return stores
+
+    }
+
+    async updateMyStore(
+        ownerId: string,
+        storeId: string,
+        updateStore: UpdateStoreDTO
+    ) {
+        const store = await this.storeModel.findOne({ _id: storeId, owner: ownerId });
+
+        if (!store) {
+            throw new AppError(
+                `Store with ID ${storeId} not found / this store does not belong to you`,
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        await this.storeModel.findByIdAndUpdate(
+            storeId,
+            { $set: updateStore },
+            { new: true }
+        );
+
         return {
-            name: myStore.name,
-            description: myStore.description,
-            id: myStore._id.toString(),
-            owner: myStore.owner,
+            message: 'Store updated successfully',
         };
+
+    }
+
+    async deleteMyStore(ownerId: string, storeId: string): Promise<{ message: string }> {
+
+        const store = await this.storeModel.findOne({ _id: storeId, owner: ownerId });
+
+        if (!store) {
+            throw new AppError(
+                `Store with ID ${storeId} not found / this store does not belong to you`,
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        await this.storeModel.findByIdAndDelete(storeId);
+
+        return { message: 'Store deleted successfully' };
     }
 }

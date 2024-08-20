@@ -45,10 +45,10 @@ import { StoreModule } from './stores/store.module';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TransformInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //  // useClass: TransformInterceptor,
+    // },
     JwtService,
   ],
 })

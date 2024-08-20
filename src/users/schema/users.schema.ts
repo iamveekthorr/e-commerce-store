@@ -18,6 +18,9 @@ const SCHEMA_OPTIONS = {
   },
 })
 export class User {
+
+  id: string;
+
   @Prop({ required: true, type: String, unique: true })
   email: string;
 
