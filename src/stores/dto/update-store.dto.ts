@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateStoreDTO {
 
@@ -8,5 +8,9 @@ export class UpdateStoreDTO {
     @IsOptional()
     @IsString()
     description?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    storeId: string;
 
 }

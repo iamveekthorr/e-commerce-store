@@ -64,9 +64,9 @@ export class StoreService {
 
     async updateMyStore(
         ownerId: string,
-        storeId: string,
         updateStore: UpdateStoreDTO,
     ) {
+        const { storeId } = updateStore;
 
         const store = await this.storeModel.findOne({
             _id: storeId,
@@ -75,7 +75,7 @@ export class StoreService {
 
         if (!store) {
             throw new AppError(
-                `Store with ID ${storeId} not found / this store does not belong to you`,
+                `Store with ID ${storeId} not found`,
                 HttpStatus.NOT_FOUND,
             );
         }
@@ -102,7 +102,7 @@ export class StoreService {
 
         if (!store) {
             throw new AppError(
-                `Store with ID ${storeId} not found / this store does not belong to you`,
+                `Store with ID ${storeId} not found`,
                 HttpStatus.NOT_FOUND,
             );
         }
