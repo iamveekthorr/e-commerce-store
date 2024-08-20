@@ -18,7 +18,6 @@ const SCHEMA_OPTIONS = {
   },
 })
 export class User {
-
   id: string;
 
   @Prop({ required: true, type: String, unique: true })
@@ -33,6 +32,12 @@ export class User {
 
   @Prop({ type: Boolean, default: false })
   isVerified: boolean;
+
+  @Prop({ type: Date, default: Date.now })
+  createdAt: Date;
+
+  @Prop({ type: Date, default: Date.now })
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

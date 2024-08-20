@@ -13,7 +13,6 @@ import { ValidationPipe } from './pipes/validation.pipe';
 import { GlobalExceptionsFilter } from './global-filters/global-exception.filter';
 
 import { ResponseInterceptor } from './interceptors/response.interceptor';
-import { TransformInterceptor } from './interceptors/transform.interceptor';
 import { StoreModule } from './stores/store.module';
 
 @Module({
@@ -45,10 +44,6 @@ import { StoreModule } from './stores/store.module';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //  // useClass: TransformInterceptor,
-    // },
     JwtService,
   ],
 })

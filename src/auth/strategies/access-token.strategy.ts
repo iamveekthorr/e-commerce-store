@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config';
 import { JWTPayload } from '../jwt-payload.type';
 
 import { UserService } from '~/users/users.service';
-import { User } from '~/users/schema/users.schema';
 
 import { AppError } from '~/common/app-error.common';
 
@@ -22,7 +21,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  public async validate(payload: JWTPayload): Promise<User> {
+  public async validate(payload: JWTPayload) {
     const { sub } = payload;
 
     // find user using the provided token
