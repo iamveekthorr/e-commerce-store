@@ -9,9 +9,4 @@ export class CreateStoreDTO {
     @IsNotEmpty()
     @IsString()
     description: string;
-
-    @IsNotEmpty()
-    @IsMongoId()
-    owner: string;
-
 }
