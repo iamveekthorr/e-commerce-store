@@ -1,10 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Store } from '../schema/store.schema';
 import { Model } from 'mongoose';
+
+import { AppError } from '~/common/app-error.common';
+
+import { Store } from '../schema/store.schema';
 import { CreateStoreDTO } from '../dto/create-store.dto';
 import { UpdateStoreDTO } from '../dto/update-store.dto';
-import { AppError } from '~/common/app-error.common';
 
 @Injectable()
 export class StoreService {
@@ -13,10 +15,22 @@ export class StoreService {
     private readonly storeModel: Model<Store>,
   ) {}
 
-  async createStore(createStoreDTO: CreateStoreDTO) {
-    const newStore = new this.storeModel(createStoreDTO);
+  async createStore(ownerId: string, createStoreDto: CreateStoreDTO) {
+    const storeCount = await this.storeModel.countDocuments({ owner: ownerId });
 
-    await newStore.save();
+    if (storeCount >= 10) {
+      throw new AppError(
+        'You cannot own more than 10 stores',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const newStore = new this.storeModel({
+      ...createStoreDto,
+      owner: ownerId,
+    });
+
+    newStore.save();
 
     return {
       message: 'Store created successfully',
@@ -27,20 +41,16 @@ export class StoreService {
    * only for super-admin
    */
   async getAllStores() {
-    const stores = await this.storeModel.find().lean().exec();
-
-    return stores.map((store) => ({
-      ...store,
-      _id: store._id.toString(),
-    }));
+    const stores = await this.storeModel.find();
+    return stores;
   }
 
   /**
-   * allow a retailer get their store details
+   * allows a retailer get their store(s) details
    */
-  async getMyStore(id: string) {
+  async getMyStores(id: string) {
     const stores = await this.storeModel.find({
-      owner: '66bf4d123627d4e6dff790c5',
+      owner: id,
     });
 
     if (!stores) {
@@ -53,11 +63,9 @@ export class StoreService {
     return stores;
   }
 
-  async updateMyStore(
-    ownerId: string,
-    storeId: string,
-    updateStore: UpdateStoreDTO,
-  ) {
+  async updateMyStore(ownerId: string, updateStore: UpdateStoreDTO) {
+    const { storeId } = updateStore;
+
     const store = await this.storeModel.findOne({
       _id: storeId,
       owner: ownerId,
@@ -65,7 +73,7 @@ export class StoreService {
 
     if (!store) {
       throw new AppError(
-        `Store with ID ${storeId} not found / this store does not belong to you`,
+        `Store with ID ${storeId} not found`,
         HttpStatus.NOT_FOUND,
       );
     }
@@ -92,7 +100,7 @@ export class StoreService {
 
     if (!store) {
       throw new AppError(
-        `Store with ID ${storeId} not found / this store does not belong to you`,
+        `Store with ID ${storeId} not found`,
         HttpStatus.NOT_FOUND,
       );
     }

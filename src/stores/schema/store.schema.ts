@@ -9,8 +9,6 @@ const SCHEMA_OPTIONS = {
     virtuals: true,
     transform: true,
 };
-
-
 @Schema({
     toJSON: { ...SCHEMA_OPTIONS },
     toObject: {

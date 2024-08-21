@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateStoreDTO {
 
@@ -9,9 +9,4 @@ export class CreateStoreDTO {
     @IsNotEmpty()
     @IsString()
     description: string;
-
-    @IsNotEmpty()
-    @IsMongoId()
-    owner: string;
-
 }

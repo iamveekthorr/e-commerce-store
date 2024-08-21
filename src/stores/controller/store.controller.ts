@@ -1,15 +1,15 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '~/auth/guards/auth.guard';
 import { CurrentUser } from '~/auth/decorators/current-user.decorator';
-import { JWTPayload } from '~/auth/jwt-payload.type';
 import { Roles } from '~/auth/decorators/roles.decorator';
 import { Role } from '~/auth/role.enum';
 import { RolesGuard } from '~/auth/guards/role.guard';
@@ -25,15 +25,18 @@ export class StoreController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  async createStore(@Body() createStoreDTO: CreateStoreDTO) {
-    return this.storeService.createStore(createStoreDTO);
+  async createStore(
+    @Body() createStoreDTO: CreateStoreDTO,
+    @CurrentUser() user: User,
+  ) {
+    return this.storeService.createStore(user.id, createStoreDTO);
   }
 
   @Get('my')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.USER, Role.RETAIL_ADMIN)
-  async getMyStore(@CurrentUser() user: User) {
-    return this.storeService.getMyStore(user.id);
+  @Roles(Role.RETAIL_ADMIN)
+  async getMyStores(@CurrentUser() user: User) {
+    return this.storeService.getMyStores(user.id);
   }
 
   @Get()
@@ -43,13 +46,23 @@ export class StoreController {
     return this.storeService.getAllStores();
   }
 
-  @Put('my/:storeId')
+  @Patch()
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.RETAIL_ADMIN)
   async updateMyStore(
-    @CurrentUser() user: JWTPayload,
+    @CurrentUser() user: User,
     @Body() updateStore: UpdateStoreDTO,
+  ) {
+    return this.storeService.updateMyStore(user.id, updateStore);
+  }
+
+  @Delete(':storeId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.RETAIL_ADMIN)
+  async deleteMyStore(
+    @CurrentUser() user: User,
     @Param('storeId') storeId: string,
   ) {
-    return this.storeService.updateMyStore(user.sub, storeId, updateStore);
+    return this.storeService.deleteMyStore(user.id, storeId);
   }
 }
