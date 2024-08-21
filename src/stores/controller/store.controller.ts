@@ -48,7 +48,7 @@ export class StoreController {
 
     @Patch()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.USER)
+    @Roles(Role.RETAIL_ADMIN)
     async updateMyStore(
         @CurrentUser() user: User,
         @Body() updateStore: UpdateStoreDTO,
@@ -58,7 +58,7 @@ export class StoreController {
 
     @Delete(':storeId')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.USER)
+    @Roles(Role.RETAIL_ADMIN)
     async deleteMyStore(
         @CurrentUser() user: User,
         @Param('storeId') storeId: string,
