@@ -1,114 +1,112 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+import { AppError } from '~/common/app-error.common';
+
 import { Store } from '../schema/store.schema';
-import { Model, Types } from 'mongoose';
 import { CreateStoreDTO } from '../dto/create-store.dto';
 import { UpdateStoreDTO } from '../dto/update-store.dto';
-import { AppError } from '~/common/app-error.common';
 
 @Injectable()
 export class StoreService {
-    constructor(
-        @InjectModel(Store.name)
-        private readonly storeModel: Model<Store>,
-    ) { }
+  constructor(
+    @InjectModel(Store.name)
+    private readonly storeModel: Model<Store>,
+  ) {}
 
+  async createStore(ownerId: string, createStoreDto: CreateStoreDTO) {
+    const storeCount = await this.storeModel.countDocuments({ owner: ownerId });
 
-    async createStore(ownerId: string, createStoreDto: CreateStoreDTO) {
-        const storeCount = await this.storeModel.countDocuments({ owner: ownerId });
-
-        if (storeCount >= 10) {
-            throw new AppError(
-                'You cannot own more than 10 stores',
-                HttpStatus.BAD_REQUEST
-            );
-        }
-
-        const newStore = new this.storeModel({
-            ...createStoreDto,
-            owner: ownerId,
-        });
-
-        newStore.save();
-
-        return {
-            message: 'Store created successfully',
-        };
+    if (storeCount >= 10) {
+      throw new AppError(
+        'You cannot own more than 10 stores',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    /**
-     * only for super-admin
-     */
-    async getAllStores() {
-        const stores = await this.storeModel.find();
-        return stores
+    const newStore = new this.storeModel({
+      ...createStoreDto,
+      owner: ownerId,
+    });
+
+    newStore.save();
+
+    return {
+      message: 'Store created successfully',
+    };
+  }
+
+  /**
+   * only for super-admin
+   */
+  async getAllStores() {
+    const stores = await this.storeModel.find();
+    return stores;
+  }
+
+  /**
+   * allows a retailer get their store(s) details
+   */
+  async getMyStores(id: string) {
+    const stores = await this.storeModel.find({
+      owner: id,
+    });
+
+    if (!stores) {
+      throw new AppError(
+        `No stores found for user with ID ${id}`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    /**
-     * allows a retailer get their store(s) details
-     */
-    async getMyStores(id: string) {
-        const stores = await this.storeModel.find({
-            owner: id,
-        });
+    return stores;
+  }
 
-        if (!stores) {
-            throw new AppError(
-                `No stores found for user with ID ${id}`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
+  async updateMyStore(ownerId: string, updateStore: UpdateStoreDTO) {
+    const { storeId } = updateStore;
 
-        return stores;
+    const store = await this.storeModel.findOne({
+      _id: storeId,
+      owner: ownerId,
+    });
+
+    if (!store) {
+      throw new AppError(
+        `Store with ID ${storeId} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    async updateMyStore(
-        ownerId: string,
-        updateStore: UpdateStoreDTO,
-    ) {
-        const { storeId } = updateStore;
+    await this.storeModel.findByIdAndUpdate(
+      storeId,
+      { $set: updateStore },
+      { new: true },
+    );
 
-        const store = await this.storeModel.findOne({
-            _id: storeId,
-            owner: ownerId
-        });
+    return {
+      message: 'Store updated successfully',
+    };
+  }
 
-        if (!store) {
-            throw new AppError(
-                `Store with ID ${storeId} not found`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
+  async deleteMyStore(
+    ownerId: string,
+    storeId: string,
+  ): Promise<{ message: string }> {
+    const store = await this.storeModel.findOne({
+      _id: storeId,
+      owner: ownerId,
+    });
 
-        await this.storeModel.findByIdAndUpdate(
-            storeId,
-            { $set: updateStore },
-            { new: true },
-        );
-
-        return {
-            message: 'Store updated successfully',
-        };
+    if (!store) {
+      throw new AppError(
+        `Store with ID ${storeId} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    async deleteMyStore(
-        ownerId: string,
-        storeId: string,
-    ): Promise<{ message: string }> {
-        const store = await this.storeModel.findOne({
-            _id: storeId,
-            owner: ownerId,
-        });
+    await this.storeModel.findByIdAndDelete(storeId);
 
-        if (!store) {
-            throw new AppError(
-                `Store with ID ${storeId} not found`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
-
-        await this.storeModel.findByIdAndDelete(storeId);
-
-        return { message: 'Store deleted successfully' };
-    }
+    return { message: 'Store deleted successfully' };
+  }
 }
