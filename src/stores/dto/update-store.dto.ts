@@ -1,4 +1,4 @@
-import { IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateStoreDTO {
 
@@ -9,8 +9,8 @@ export class UpdateStoreDTO {
     @IsString()
     description?: string;
 
-    @IsOptional()
-    @IsMongoId()
-    owner?: string;
+    @IsString()
+    @IsNotEmpty()
+    storeId: string;
 
 }
