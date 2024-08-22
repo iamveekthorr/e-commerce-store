@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ProductService } from "../service/product.service";
 import { JwtAuthGuard } from "~/auth/guards/auth.guard";
 import { RolesGuard } from "~/auth/guards/role.guard";
@@ -7,6 +7,7 @@ import { CurrentUser } from "~/auth/decorators/current-user.decorator";
 import { User } from "~/users/schema/users.schema";
 import { Role } from "~/auth/role.enum";
 import { Roles } from "~/auth/decorators/roles.decorator";
+import { UpdateProductDTO } from "../dto/update-product.dto";
 
 
 @Controller('products')
@@ -29,7 +30,7 @@ export class ProductController {
 
     @Get('my/:storeId')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.RETAIL_ADMIN)
+    @Roles(Role.USER)
     async getProductsInMyStore(
         @CurrentUser() user: User,
         @Param('storeId') storeId: string
@@ -38,6 +39,19 @@ export class ProductController {
         return this.productService.findProductsByStoreIDForRetailer(
             user.id,
             storeId
+        );
+    }
+
+    @Patch()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.USER)
+    async updateMyProduct(
+        @CurrentUser() user: User,
+        @Body() updateDto: UpdateProductDTO,
+    ) {
+        return this.productService.updateMyProduct(
+            user.id,
+            updateDto
         );
     }
 
