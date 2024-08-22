@@ -92,7 +92,7 @@ export class StoreService {
   async deleteMyStore(
     ownerId: string,
     storeId: string,
-  ): Promise<{ message: string }> {
+  ) {
     const store = await this.storeModel.findOne({
       _id: storeId,
       owner: ownerId,
