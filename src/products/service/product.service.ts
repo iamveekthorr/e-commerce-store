@@ -5,8 +5,6 @@ import { Model, Types } from "mongoose";
 import { CreateProductDTO } from "../dto/create-product.dto";
 import { Store, StoreDocument } from "~/stores/schema/store.schema";
 import { AppError } from "~/common/app-error.common";
-import { User } from "~/users/schema/users.schema";
-import { Role } from "~/auth/role.enum";
 import { UpdateProductDTO } from "../dto/update-product.dto";
 
 
