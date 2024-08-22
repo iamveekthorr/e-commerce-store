@@ -14,6 +14,7 @@ import { GlobalExceptionsFilter } from './global-filters/global-exception.filter
 
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { StoreModule } from './stores/store.module';
+import { ProductModule } from './products/product.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { StoreModule } from './stores/store.module';
     AuthModule,
     UsersModule,
     StoreModule,
+    ProductModule
   ],
   providers: [
     {

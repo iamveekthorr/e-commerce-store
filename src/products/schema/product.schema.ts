@@ -7,7 +7,7 @@ export type ProductDocument = HydratedDocument<Product>;
 @Schema()
 export class Product {
     @Prop({ required: true, type: String })
-    prdoductName: string;
+    productName: string;
 
     //Refactor to have it's own entity
     @Prop({ required: true, type: String })
