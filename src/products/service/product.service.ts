@@ -49,7 +49,7 @@ export class ProductService {
         return products
     }
 
-    async getProductById() {
+    async getProductById(productId: string) {
         const product = await this.productModel.findOne({ _id: productId, })
 
         if (!product) {
@@ -143,7 +143,7 @@ export class ProductService {
 
         if (!isStoreOwner) {
             throw new AppError(
-                `You do not have permission to delete this product`,
+                `Forbidden`,
                 HttpStatus.FORBIDDEN,
             );
         }

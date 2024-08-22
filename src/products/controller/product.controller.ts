@@ -29,6 +29,13 @@ export class ProductController {
         return this.productService.getAllProducts()
     }
 
+    @Get(':productId')
+    async getAllPoductById(
+        @Param('productId') productId: string
+    ) {
+        return this.productService.getProductById(productId)
+    }
+
     @Get('my/:storeId')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.RETAIL_ADMIN)
@@ -57,14 +64,13 @@ export class ProductController {
     }
 
 
-    @Delete(':productId')
+    @Delete('my/:productId')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.RETAIL_ADMIN)
     async deleteMyProduct(
         @CurrentUser() user: User,
         @Param('productId') productId: string
     ) {
-
         return this.productService.deleteMyProduct(
             user.id,
             productId
