@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ProductService } from "../service/product.service";
 import { JwtAuthGuard } from "~/auth/guards/auth.guard";
 import { RolesGuard } from "~/auth/guards/role.guard";
@@ -15,6 +15,7 @@ export class ProductController {
     constructor(private readonly productService: ProductService) { }
 
     @Post()
+    @Roles(Role.RETAIL_ADMIN)
     @UseGuards(JwtAuthGuard, RolesGuard)
     async createProduct(
         @Body() createProductDto: CreateProductDTO,
@@ -30,7 +31,7 @@ export class ProductController {
 
     @Get('my/:storeId')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.USER)
+    @Roles(Role.RETAIL_ADMIN)
     async getProductsInMyStore(
         @CurrentUser() user: User,
         @Param('storeId') storeId: string
@@ -44,7 +45,7 @@ export class ProductController {
 
     @Patch()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.USER)
+    @Roles(Role.RETAIL_ADMIN)
     async updateMyProduct(
         @CurrentUser() user: User,
         @Body() updateDto: UpdateProductDTO,
@@ -52,6 +53,33 @@ export class ProductController {
         return this.productService.updateMyProduct(
             user.id,
             updateDto
+        );
+    }
+
+
+    @Delete(':productId')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.RETAIL_ADMIN)
+    async deleteMyProduct(
+        @CurrentUser() user: User,
+        @Param('productId') productId: string
+    ) {
+
+        return this.productService.deleteMyProduct(
+            user.id,
+            productId
+        );
+    }
+
+
+    @Delete(':productId')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.SUPER_ADMIN)
+    async deleteProduct(
+        @Param('productId') productId: string
+    ) {
+        return this.productService.deleteProduct(
+            productId
         );
     }
 
