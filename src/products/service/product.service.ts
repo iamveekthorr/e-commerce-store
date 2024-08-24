@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Product } from "../schema/product.schema";
-import  { Model, Types } from "mongoose";
+import { Model, Types } from "mongoose";
 import { CreateProductDTO } from "../dto/create-product.dto";
 import { Store } from "~/stores/schema/store.schema";
 import { AppError } from "~/common/app-error.common";
@@ -118,20 +118,21 @@ export class ProductService {
 
         return { message: 'Product updated succesfully' };
     }
+
     async deleteMyProduct(userId: string, productId: string) {
         const product = await this.productModel.findById(productId).populate('store');
         if (!product) {
             throw new AppError(
-                `Forbidden`,
-                HttpStatus.FORBIDDEN,
+                `product not found`,
+                HttpStatus.NOT_FOUND,
             );
         }
 
         const store = await this.storeModel.findById(product.store);
         if (!store) {
             throw new AppError(
-                `Forbidden`,
-                HttpStatus.FORBIDDEN,
+                `store not found`,
+                HttpStatus.NOT_FOUND,
             );
         }
 
