@@ -146,7 +146,7 @@ export class ProductService {
 
 
         return {
-            message: 'successfully deleted'
+            message: 'Product deleted successfully'
         };
 
     }
