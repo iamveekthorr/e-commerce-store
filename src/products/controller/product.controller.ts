@@ -1,12 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
-import { ProductService } from "../service/product.service";
+
 import { JwtAuthGuard } from "~/auth/guards/auth.guard";
 import { RolesGuard } from "~/auth/guards/role.guard";
-import { CreateProductDTO } from "../dto/create-product.dto";
-import { CurrentUser } from "~/auth/decorators/current-user.decorator";
-import { User } from "~/users/schema/users.schema";
-import { Role } from "~/auth/role.enum";
 import { Roles } from "~/auth/decorators/roles.decorator";
+import { CurrentUser } from "~/auth/decorators/current-user.decorator";
+import { Role } from "~/auth/role.enum";
+import { User } from "~/users/schema/users.schema";
+
+import { ProductService } from "../service/product.service";
+import { CreateProductDTO } from "../dto/create-product.dto";
 import { UpdateProductDTO } from "../dto/update-product.dto";
 
 

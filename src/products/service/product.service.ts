@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Product } from "../schema/product.schema";
-import { Model, Types } from "mongoose";
+import  { Model, Types } from "mongoose";
 import { CreateProductDTO } from "../dto/create-product.dto";
-import { Store, StoreDocument } from "~/stores/schema/store.schema";
+import { Store } from "~/stores/schema/store.schema";
 import { AppError } from "~/common/app-error.common";
 import { UpdateProductDTO } from "../dto/update-product.dto";
 
@@ -87,24 +87,21 @@ export class ProductService {
     ) {
 
         const { productId } = updateProductDto;
-
-        const product = await this.productModel.findOne({
-            _id: productId,
-        })
-            .populate({
-                path: 'store',
-                select: 'owner',
-            })
-            .lean();
-
+        const product = await this.productModel.findById(productId).populate('store');
         if (!product) {
             throw new AppError(
-                `Product not found`,
+                `product not found`,
                 HttpStatus.NOT_FOUND,
             );
         }
 
-        const store = product.store as unknown as { owner: Types.ObjectId };
+        const store = await this.storeModel.findById(product.store);
+        if (!store) {
+            throw new AppError(
+                `store not found`,
+                HttpStatus.NOT_FOUND,
+            );
+        }
 
         if (store.owner.toString() !== userId) {
             throw new AppError(
@@ -121,36 +118,37 @@ export class ProductService {
 
         return { message: 'Product updated succesfully' };
     }
-
     async deleteMyProduct(userId: string, productId: string) {
-        const product = await this.productModel.findOne({
-            _id: productId,
-        }).populate({
-            path: 'store',
-            select: 'owner',
-        }).lean();
-
+        const product = await this.productModel.findById(productId).populate('store');
         if (!product) {
-            throw new AppError(
-                `Product not found`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
-
-        const store = product.store as unknown as { owner: Types.ObjectId };
-
-        const isStoreOwner = store.owner.toString() === userId;
-
-        if (!isStoreOwner) {
             throw new AppError(
                 `Forbidden`,
                 HttpStatus.FORBIDDEN,
             );
         }
 
-        await this.productModel.deleteOne({ _id: productId });
+        const store = await this.storeModel.findById(product.store);
+        if (!store) {
+            throw new AppError(
+                `Forbidden`,
+                HttpStatus.FORBIDDEN,
+            );
+        }
 
-        return { message: 'Product deleted successfully' };
+        if (store.owner.toString() !== userId) {
+            throw new AppError(
+                `Forbidden`,
+                HttpStatus.FORBIDDEN,
+            );
+        }
+
+        await this.productModel.findByIdAndDelete(productId);
+
+
+        return {
+            message: 'successfully deleted'
+        };
+
     }
 
     /**

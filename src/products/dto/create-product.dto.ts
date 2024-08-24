@@ -23,5 +23,5 @@ export class CreateProductDTO {
 
     @IsNumber()
     @IsOptional()
-    stock?: number;
+    quantity?: number;
 }

@@ -4,7 +4,18 @@ import { HydratedDocument, Types } from 'mongoose';
 
 export type ProductDocument = HydratedDocument<Product>;
 
-@Schema()
+
+const SCHEMA_OPTIONS = {
+    virtuals: true,
+    transform: true,
+  };
+  
+  @Schema({
+    toJSON: { ...SCHEMA_OPTIONS },
+    toObject: {
+      ...SCHEMA_OPTIONS,
+    },
+  })
 export class Product {
     @Prop({ required: true, type: String })
     productName: string;
@@ -13,9 +24,9 @@ export class Product {
     @Prop({ required: true, type: String })
     category: string;
 
-     /**
-     * The store the product belongs to
-     */
+    /**
+    * The store the product belongs to
+    */
     @Prop({ required: true, type: Types.ObjectId, ref: 'Store' })
     store: Types.ObjectId;
 
@@ -26,7 +37,7 @@ export class Product {
     price: number;
 
     @Prop({ required: false, type: Number, default: 0 })
-    stock: number;
+    quantity: number;
 
 }
 

@@ -25,6 +25,6 @@ export class UpdateProductDTO {
 
     @IsNumber()
     @IsOptional()
-    stock?: number;
+    quantity?: number;
 
 }
