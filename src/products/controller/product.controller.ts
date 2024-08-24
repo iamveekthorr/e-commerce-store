@@ -32,7 +32,7 @@ export class ProductController {
     }
 
     @Get(':productId')
-    async getAllPoductById(
+    async getProductById(
         @Param('productId') productId: string
     ) {
         return this.productService.getProductById(productId)
