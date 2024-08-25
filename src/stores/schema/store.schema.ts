@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { SCHEMA_OPTIONS } from '../../common/schema-options.common';
+import { SCHEMA_OPTIONS } from '../../constants';
 
 
 export type StoreDocument = HydratedDocument<Store>;
