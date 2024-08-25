@@ -46,7 +46,7 @@ export class ProductController {
         @Param('storeId') storeId: string
     ) {
 
-        return this.productService.findProductsByStoreIDForRetailer(
+        return this.productService.getProductsByStoreId(
             user.id,
             storeId
         );

@@ -62,7 +62,7 @@ export class ProductService {
         return product
     }
 
-    async findProductsByStoreIDForRetailer(userId: string, storeId: string) {
+    async getProductsByStoreId(userId: string, storeId: string) {
         const store = await this.storeModel.findOne({
             _id: storeId,
             owner: userId,
