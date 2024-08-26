@@ -25,7 +25,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @Roles(Role.RETAIL_ADMIN)
+  //@Roles(Role.RETAIL_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async createProduct(
     @Body() createProductDto: CreateProductDTO,
