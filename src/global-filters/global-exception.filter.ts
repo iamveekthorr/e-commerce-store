@@ -29,7 +29,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     const errCode: string = err.code || false;
 
     if (err instanceof AppError) {
-      message = { err };
+      ({ message } = err);
     }
 
     if (errCode && errCode?.startsWith('SMTP')) {
