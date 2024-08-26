@@ -3,13 +3,9 @@ import { HydratedDocument } from 'mongoose';
 import { Exclude } from 'class-transformer';
 
 import { Role } from '~/auth/role.enum';
+import { SCHEMA_OPTIONS } from '../../constants';
 
 export type UserDocument = HydratedDocument<User>;
-
-const SCHEMA_OPTIONS = {
-  virtuals: true,
-  transform: true,
-};
 
 @Schema({
   toJSON: { ...SCHEMA_OPTIONS },

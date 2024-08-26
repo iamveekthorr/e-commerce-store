@@ -1,14 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { SCHEMA_OPTIONS } from '../../constants';
 
 
 export type StoreDocument = HydratedDocument<Store>;
 
 
-const SCHEMA_OPTIONS = {
-    virtuals: true,
-    transform: true,
-};
 @Schema({
     toJSON: { ...SCHEMA_OPTIONS },
     toObject: {
