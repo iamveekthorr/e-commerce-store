@@ -21,10 +21,10 @@ class EnvironmentVariables {
   JWT_ACCESS_SECRET: string;
 
   @IsString()
-  MONGO_URI: string
+  MONGO_URI: string;
 
   @IsString()
-  MONGO_PASSWORD: string
+  MONGO_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {
