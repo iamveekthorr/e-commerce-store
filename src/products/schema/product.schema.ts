@@ -16,7 +16,6 @@ export class Product {
   @Prop({ required: true, type: String })
   productName: string;
 
-  //Refactor to have it's own entity
   @Prop({ required: true, enum: Category })
   category: Category;
 
