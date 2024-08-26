@@ -1,12 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
+import { SCHEMA_OPTIONS } from '~/common/constants';
+
 export type ProductDocument = HydratedDocument<Product>;
 
-@Schema()
+@Schema({
+  toJSON: { ...SCHEMA_OPTIONS },
+  toObject: {
+    ...SCHEMA_OPTIONS,
+  },
+})
 export class Product {
   @Prop({ required: true, type: String })
-  prdoductName: string;
+  productName: string;
 
   //Refactor to have it's own entity
   @Prop({ required: true, type: String })
@@ -25,7 +32,7 @@ export class Product {
   price: number;
 
   @Prop({ required: false, type: Number, default: 0 })
-  stock: number;
+  quantity: number;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
