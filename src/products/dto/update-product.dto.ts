@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Category } from '../category.enum';
 
 export class UpdateProductDTO {
   @IsString()
@@ -13,9 +14,9 @@ export class UpdateProductDTO {
   @IsOptional()
   description?: string;
 
-  @IsString()
   @IsOptional()
-  category?: string;
+  @IsEnum(Category)
+  category?: Category;
 
   @IsNumber()
   @IsOptional()

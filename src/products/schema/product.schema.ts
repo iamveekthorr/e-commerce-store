@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
 import { SCHEMA_OPTIONS } from '~/common/constants';
+import { Category } from '../category.enum';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -15,9 +16,8 @@ export class Product {
   @Prop({ required: true, type: String })
   productName: string;
 
-  //Refactor to have it's own entity
-  @Prop({ required: true, type: String })
-  category: string;
+  @Prop({ required: true, enum: Category })
+  category: Category;
 
   /**
    * The store the product belongs to

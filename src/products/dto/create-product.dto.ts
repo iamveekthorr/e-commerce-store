@@ -4,16 +4,17 @@ import {
   IsNumber,
   IsOptional,
   IsMongoId,
+  IsEnum,
 } from 'class-validator';
+import { Category } from '../category.enum';
 
 export class CreateProductDTO {
   @IsString()
   @IsNotEmpty()
   productName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  category: string;
+  @IsEnum(Category)
+  category: Category;
 
   @IsMongoId()
   @IsNotEmpty()
