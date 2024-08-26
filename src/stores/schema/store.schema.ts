@@ -1,34 +1,30 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { SCHEMA_OPTIONS } from '../../constants';
 
+import { SCHEMA_OPTIONS } from '~/common/constants';
 
 export type StoreDocument = HydratedDocument<Store>;
 
-
 @Schema({
-    toJSON: { ...SCHEMA_OPTIONS },
-    toObject: {
-        ...SCHEMA_OPTIONS,
-    },
+  toJSON: { ...SCHEMA_OPTIONS },
+  toObject: {
+    ...SCHEMA_OPTIONS,
+  },
 })
 export class Store {
+  id: string;
 
-    id: string;
+  @Prop({ required: true, type: String })
+  name: string;
 
-    @Prop({ required: true, type: String })
-    name: string;
+  @Prop({ type: String })
+  description: string;
 
-    @Prop({ type: String })
-    description: string;
-
-
-    /**
-     * Owner of the store
-     */
-    @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
-    owner: Types.ObjectId;
-
+  /**
+   * Owner of the store
+   */
+  @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
+  owner: Types.ObjectId;
 }
 
 export const StoreSchema = SchemaFactory.createForClass(Store);

@@ -1,27 +1,33 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsMongoId } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsMongoId,
+} from 'class-validator';
 
 export class CreateProductDTO {
-    @IsString()
-    @IsNotEmpty()
-    productName: string;
+  @IsString()
+  @IsNotEmpty()
+  productName: string;
 
-    @IsString()
-    @IsNotEmpty()
-    category: string;
+  @IsString()
+  @IsNotEmpty()
+  category: string;
 
-    @IsMongoId()
-    @IsNotEmpty()
-    storeID: string;
+  @IsMongoId()
+  @IsNotEmpty()
+  storeID: string;
 
-    @IsString()
-    @IsNotEmpty()
-    description: string;
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    price: number;
+  @IsNumber()
+  @IsNotEmpty()
+  price: number;
 
-    @IsNumber()
-    @IsOptional()
-    quantity?: number;
+  @IsNumber()
+  @IsOptional()
+  quantity?: number;
 }

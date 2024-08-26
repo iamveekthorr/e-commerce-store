@@ -1,12 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { SCHEMA_OPTIONS } from '../../constants';
 
+import { SCHEMA_OPTIONS } from '~/common/constants';
 
 export type ProductDocument = HydratedDocument<Product>;
-
-
-
 
 @Schema({
   toJSON: { ...SCHEMA_OPTIONS },
@@ -23,8 +20,8 @@ export class Product {
   category: string;
 
   /**
-  * The store the product belongs to
-  */
+   * The store the product belongs to
+   */
   @Prop({ required: true, type: Types.ObjectId, ref: 'Store' })
   store: Types.ObjectId;
 
@@ -36,7 +33,6 @@ export class Product {
 
   @Prop({ required: false, type: Number, default: 0 })
   quantity: number;
-
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

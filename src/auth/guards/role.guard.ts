@@ -20,6 +20,6 @@ export class RolesGuard implements CanActivate {
 
     if (!user) return false;
 
-    return requiredRoles.some((el) => el.includes(user.roles));
+    return requiredRoles.some(el => el.includes(user.roles));
   }
 }

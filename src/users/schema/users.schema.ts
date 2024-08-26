@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import { Exclude } from 'class-transformer';
 
 import { Role } from '~/auth/role.enum';
-import { SCHEMA_OPTIONS } from '../../constants';
+import { SCHEMA_OPTIONS } from '../../common/constants';
 
 export type UserDocument = HydratedDocument<User>;
 

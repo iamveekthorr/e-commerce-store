@@ -34,7 +34,7 @@ import { ProductModule } from './products/product.module';
     AuthModule,
     UsersModule,
     StoreModule,
-    ProductModule
+    ProductModule,
   ],
   providers: [
     {

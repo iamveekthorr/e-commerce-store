@@ -6,7 +6,7 @@ import type { Observable } from 'rxjs';
 export class ResponseInterceptor implements NestInterceptor {
   intercept(_context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) => {
+      map(data => {
         return { status: 'success', data };
       }),
     );

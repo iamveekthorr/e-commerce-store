@@ -10,8 +10,9 @@ import { JsonWebTokenError } from '@nestjs/jwt';
 
 import { Environment } from '../env.validate';
 import { ValidationException } from './validation-exception.filter';
-import { AppError } from '../common/app-error.common';
-import { ErrorMessage } from '../common/error-messages.enum';
+
+import { AppError } from '~/common/app-error.common';
+import { ErrorMessage } from '~/common/error-messages.enum';
 
 @Catch()
 export class GlobalExceptionsFilter implements ExceptionFilter {
@@ -28,23 +29,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     const errCode: string = err.code || false;
 
     if (err instanceof AppError) {
-      switch (err.status) {
-        case HttpStatus.BAD_REQUEST:
-          message = err.message;
-          break;
-        case HttpStatus.GATEWAY_TIMEOUT:
-          message = err.message;
-          break;
-      }
-    }
-
-    switch (errCode) {
-      case ErrorMessage.UNIQUE_CONSTRAINT_VIOLATION:
-        status = HttpStatus.CONFLICT;
-        break;
-      case ErrorMessage.MSSQL_EREQUEST:
-        status = HttpStatus.CONFLICT;
-        break;
+      ({ message } = err);
     }
 
     if (errCode && errCode?.startsWith('SMTP')) {
@@ -55,7 +40,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     }
 
     if (typeof err.message === 'string') {
-      message = err.message;
+      ({ message } = err);
     }
 
     if (process.env.NODE_ENV === Environment.DEVELOPMENT) {
