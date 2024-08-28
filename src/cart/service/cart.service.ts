@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cart } from '../schema/cart.schema';
 import { AppError } from '~/common/app-error.common';
-import { Product } from '~/products/schema/product.schema';
 import { RemoveFromCartDto } from '../dto/removeFromCart.dto';
 import { AddToCartDto } from '../dto/addToCart.dto';
 
@@ -12,8 +11,6 @@ export class CartService {
     constructor(
         @InjectModel(Cart.name)
         private cartModel: Model<Cart>,
-        @InjectModel(Product.name)
-        private readonly productModel: Model<Product>,
     ) { }
 
     async getCart(userId: string) {
