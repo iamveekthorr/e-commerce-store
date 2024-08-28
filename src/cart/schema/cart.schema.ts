@@ -17,7 +17,7 @@ export type CartDocument = HydratedDocument<Cart>;
     @Prop([
         {
             product: { type: Types.ObjectId, ref: 'Product', required: true },
-            quantity: { type: Number, required: true },
+            quantity: { type: Number, default: 0 },
         },
     ])
     items: { product: Types.ObjectId; quantity: number }[];
