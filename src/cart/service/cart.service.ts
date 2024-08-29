@@ -15,8 +15,8 @@ export class CartService {
     async getCart(userId: string) {
         const cart = await this.cartModel
             .findOne({ user: userId })
-            .populate('items.product')
-            .exec();
+            .populate('items.product');
+
 
         if (!cart) {
             throw new AppError(
