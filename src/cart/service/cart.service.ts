@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cart } from '../schema/cart.schema';
 import { AppError } from '~/common/app-error.common';
-import { RemoveFromCartDto } from '../dto/removeFromCart.dto';
 import { AddToCartDto } from '../dto/addToCart.dto';
 
 @Injectable()
@@ -65,9 +64,7 @@ export class CartService {
         return { message: 'Items added to cart successfully' };
     }
 
-    async removeFromCart(userId: string, removeFromCartDto: RemoveFromCartDto) {
-        const { productId } = removeFromCartDto;
-
+    async removeFromCart(userId: string, productId: string) {
         const cart = await this.cartModel.findOne({ user: userId });
 
         if (!cart) {
@@ -83,6 +80,6 @@ export class CartService {
 
         cart.save();
 
-        return { message: 'Items removed from cart successfully' };
+        return { message: 'Item removed from cart successfully' };
     }
 }
