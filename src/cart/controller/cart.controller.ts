@@ -9,6 +9,7 @@ import { RolesGuard } from '~/auth/guards/role.guard';
 
 import { AddToCartDto } from '../dto/addToCart.dto';
 import { CartService } from '../service/cart.service';
+import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 
 @Controller('carts')
 @Roles(Role.USER)
@@ -22,6 +23,13 @@ export class CartController {
         @CurrentUser() user: User
     ) {
         return this.cartService.addToCart(user.id, addToCartDto);
+    }
+    @Patch()
+    async updateCartItemQuantity(
+        @Body() addToCartDto: UpdateCartItemQuantityDTO,
+        @CurrentUser() user: User
+    ) {
+        return this.cartService.updateCartItemQuantity(user.id, addToCartDto);
     }
 
     @Get()
