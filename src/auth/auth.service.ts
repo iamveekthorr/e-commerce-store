@@ -22,7 +22,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-  ) {}
+  ) { }
 
   private async generateTokens(auth: JWTPayload) {
     const [accessToken, refreshToken] = await Promise.all([
@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   async refreshToken(id: string) {
-    const user = await this.userModel.findOne({ where: { id } });
+    const user = await this.userModel.findOne({ _id: id });
 
     const tokens = await this.generateTokens({
       sub: user.id,
