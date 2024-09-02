@@ -46,7 +46,7 @@ export class ProductController {
 
     @Get('my/:storeId')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    //@Roles(Role.RETAIL_ADMIN)
+    @Roles(Role.RETAIL_ADMIN)
     getProductsInMyStore(
         @CurrentUser() user: User,
         @Param('storeId') storeId: string,

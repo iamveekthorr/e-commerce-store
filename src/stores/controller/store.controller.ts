@@ -21,11 +21,11 @@ import { UpdateStoreDTO } from '../dto/update-store.dto';
 
 @Controller('stores')
 export class StoreController {
-  constructor(private readonly storeService: StoreService) {}
+  constructor(private readonly storeService: StoreService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  async createStore(
+  createStore(
     @Body() createStoreDTO: CreateStoreDTO,
     @CurrentUser() user: User,
   ) {
@@ -35,21 +35,21 @@ export class StoreController {
   @Get('my')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.RETAIL_ADMIN)
-  async getMyStores(@CurrentUser() user: User) {
+  getMyStores(@CurrentUser() user: User) {
     return this.storeService.getMyStores(user.id);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SUPER_ADMIN)
-  async getAllStores() {
+  getAllStores() {
     return this.storeService.getAllStores();
   }
 
   @Patch()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.RETAIL_ADMIN)
-  async updateMyStore(
+  updateMyStore(
     @CurrentUser() user: User,
     @Body() updateStore: UpdateStoreDTO,
   ) {
@@ -59,7 +59,7 @@ export class StoreController {
   @Delete(':storeId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.RETAIL_ADMIN)
-  async deleteMyStore(
+  deleteMyStore(
     @CurrentUser() user: User,
     @Param('storeId') storeId: string,
   ) {

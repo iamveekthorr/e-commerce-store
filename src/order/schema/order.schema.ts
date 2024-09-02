@@ -32,6 +32,10 @@ export class Order {
     @Prop({ required: true })
     totalCost: number;
 
+
+    @Prop({ required: true })
+    shippingAddress: string;
+
     @Prop({ required: true, enum: OrderStatus, default: OrderStatus.PENDING })
     status: OrderStatus;
 }

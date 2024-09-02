@@ -6,7 +6,7 @@ import { AppError } from '~/common/app-error.common';
 import { AddToCartDto } from '../dto/addToCart.dto';
 import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 import { Order } from '~/order/schema/order.schema';
-import { OrderDTO } from '~/order/order.dto';
+import { CartCheckOutDTO } from '~/order/order.dto';
 import { Product } from '~/products/schema/product.schema';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class CartService {
         }
 
         return {
-            total: this.calculateTotalCost(cart),
+            totalCost: cart.totalCartPrice,
             user: cart.user,
             cartid: cart._id,
             items: cart.items.map(item => ({
@@ -52,14 +52,13 @@ export class CartService {
 
         let cart = await this.cartModel
             .findOne({ user: userId })
-            .populate('items.product');
+
 
         if (!cart) {
             cart = await this.cartModel.create({
                 user: userId,
                 items: [{ product: productId, quantity }],
             })
-            await cart.save();
 
         } else {
             const existingItem = cart.items.find(item => item.product.toString() === productId);
@@ -71,9 +70,7 @@ export class CartService {
             }
         }
 
-       
-        cart.totalCartPrice = this.calculateTotalCost(cart);
-
+        await this.calculateTotalCost(cart);
         await cart.save();
 
         return { message: 'Items added to cart successfully' };
@@ -81,8 +78,8 @@ export class CartService {
 
     async removeFromCart(userId: string, productId: string) {
         const cart = await this.cartModel
-            .findOne({ user: userId })
-            .populate('items.product');
+            .findOne({ user: userId });
+
 
         if (!cart) {
             throw new AppError(
@@ -94,8 +91,8 @@ export class CartService {
         cart.items = cart.items.filter(
             (item) => item.product.toString() !== productId,
         );
-        cart.totalCartPrice = this.calculateTotalCost(cart);
 
+        await this.calculateTotalCost(cart);
         await cart.save();
         return { message: 'Item removed from cart successfully' };
     }
@@ -111,8 +108,7 @@ export class CartService {
         }
 
         const cart = await this.cartModel
-            .findOne({ user: userId })
-            .populate('items.product');
+            .findOne({ user: userId });
 
         if (!cart) {
             throw new AppError(
@@ -133,14 +129,14 @@ export class CartService {
                 HttpStatus.NOT_FOUND
             );
         }
+        await this.calculateTotalCost(cart);
 
-        cart.totalCartPrice = this.calculateTotalCost(cart);
         await cart.save();
 
-        return { message: 'Item quantity updated successfully', cart: cart };
+        return { message: 'Item quantity updated successfully' };
     }
 
-    async checkoutCart(userId: string, orderDTO: OrderDTO) {
+    async checkoutCart(userId: string, orderDTO: CartCheckOutDTO) {
 
         const { cartId, shippingAddress } = orderDTO;
 
@@ -159,22 +155,20 @@ export class CartService {
 
             }
 
+            await this.updateProductQuantities(cart.items);
+
             /**
              * if paymemt service is available
              */
-
-         //   await this.updateProductQuantities(cart.items);
 
             const order = await this.orderModel.create({
                 user: userId,
                 cartItems: cart.items,
                 shippingAddress: shippingAddress,
-                totalCost: cart.totalCartPrice 
+                totalCost: cart.totalCartPrice
             });
 
             await order.save();
-
-
             await this.cartModel.findByIdAndDelete(cartId);
 
             return { message: 'Cart checkout successful', orderId: order._id };
@@ -185,15 +179,6 @@ export class CartService {
         } finally {
             session.endSession();
         }
-    }
-
-    private calculateTotalCost(cart): number {
-        let totalPrice = 0;
-        cart.items.forEach((item) => {
-            totalPrice += item.quantity * item.product.price;
-        });
-        cart.totalCartPrice = totalPrice;
-        return totalPrice;
     }
 
     private async updateProductQuantities(items: { product: Types.ObjectId; quantity: number }[]) {
@@ -215,4 +200,26 @@ export class CartService {
         }
     }
 
+
+    private async calculateTotalCost(cart) {
+        let totalPrice = 0;
+
+        for (const item of cart.items) {
+            const product = await this.productModel.findById(item.product);
+
+            if (product) {
+                totalPrice += item.quantity * product.price;
+            } else {
+                throw new AppError(
+                    `Product not found for item with ID: ${item.product}`,
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+        }
+
+        cart.totalCartPrice = totalPrice;
+
+        return totalPrice;
+
+    }
 }

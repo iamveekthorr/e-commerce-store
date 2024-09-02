@@ -1,12 +1,12 @@
 
 
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { isNotEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class OrderDTO {
+export class CartCheckOutDTO {
     @IsNotEmpty()
     cartId: string;
 
     @IsString()
-    @IsNumber()
+    @IsNotEmpty()
     shippingAddress: string;
 }

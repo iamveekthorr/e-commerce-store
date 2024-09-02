@@ -10,6 +10,7 @@ import { RolesGuard } from '~/auth/guards/role.guard';
 import { AddToCartDto } from '../dto/addToCart.dto';
 import { CartService } from '../service/cart.service';
 import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
+import { CartCheckOutDTO } from '~/order/order.dto';
 
 @Controller('carts')
 @Roles(Role.USER)
@@ -18,14 +19,23 @@ export class CartController {
     constructor(private readonly cartService: CartService) { }
 
     @Post()
-    async addToCart(
+    addToCart(
         @Body() addToCartDto: AddToCartDto,
         @CurrentUser() user: User
     ) {
         return this.cartService.addToCart(user.id, addToCartDto);
     }
+
+
+    @Post('checkout')
+    checkoutCart(
+        @Body() orderDTO: CartCheckOutDTO,
+        @CurrentUser() user: User
+    ) {
+        return this.cartService.checkoutCart(user.id, orderDTO);
+    }
     @Patch()
-    async updateCartItemQuantity(
+    updateCartItemQuantity(
         @Body() addToCartDto: UpdateCartItemQuantityDTO,
         @CurrentUser() user: User
     ) {
@@ -33,12 +43,12 @@ export class CartController {
     }
 
     @Get()
-    async getUserCart(@CurrentUser() user: User) {
+    getUserCart(@CurrentUser() user: User) {
         return this.cartService.getCart(user.id);
     }
 
     @Delete(':productId')
-    async removeFromCart(
+    removeFromCart(
         @Param('productId') productId: string,
         @CurrentUser() user: User
     ) {
