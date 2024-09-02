@@ -36,7 +36,7 @@ import { CartModule } from './cart/cart.module';
     UsersModule,
     StoreModule,
     ProductModule,
-    CartModule
+    CartModule,
   ],
   providers: [
     {
@@ -51,4 +51,4 @@ import { CartModule } from './cart/cart.module';
     JwtService,
   ],
 })
-export class AppModule { }
+export class AppModule {}
