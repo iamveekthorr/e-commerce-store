@@ -1,6 +1,6 @@
-import mongoose, { Query, Types } from 'mongoose';
+import mongoose, { Document, Query, Types } from 'mongoose';
 
-class APIFeatures<T> {
+class APIFeatures<T extends Document> {
   public query: Query<T[], T>;
   private queryObj: Record<string, string>;
   public q: Record<string, any>;
