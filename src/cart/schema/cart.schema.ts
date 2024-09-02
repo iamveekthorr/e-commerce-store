@@ -10,9 +10,13 @@ export type CartDocument = HydratedDocument<Cart>;
     toObject: {
         ...SCHEMA_OPTIONS,
     },
-}) export class Cart {
+})
+export class Cart {
     @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
     user: Types.ObjectId;
+
+    @Prop({ type: Number })
+    totalCartPrice: number;
 
     @Prop([
         {

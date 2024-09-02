@@ -16,6 +16,7 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { StoreModule } from './stores/store.module';
 import { ProductModule } from './products/product.module';
 import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import { CartModule } from './cart/cart.module';
     UsersModule,
     StoreModule,
     ProductModule,
-    CartModule
+    CartModule,
+    OrderModule,
   ],
   providers: [
     {
