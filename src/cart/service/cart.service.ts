@@ -7,79 +7,79 @@ import { AddToCartDto } from '../dto/addToCart.dto';
 
 @Injectable()
 export class CartService {
-    constructor(
-        @InjectModel(Cart.name)
-        private cartModel: Model<Cart>,
-    ) { }
+  constructor(
+    @InjectModel(Cart.name)
+    private cartModel: Model<Cart>,
+  ) {}
 
-    async getCart(userId: string) {
-        const cart = await this.cartModel
-            .findOne({ user: userId })
-            .populate('items.product');
+  async getCart(userId: string) {
+    const cart = await this.cartModel
+      .findOne({ user: userId })
+      .populate('items.product');
 
-
-        if (!cart) {
-            throw new AppError(
-                `cart does not exist or you have no cart`,
-                HttpStatus.NOT_FOUND
-            );
-        }
-
-        return {
-            user: cart.user,
-            cartid: cart._id,
-            items: cart.items.map(item => ({
-                product: item.product,
-                quantity: item.quantity,
-            })),
-        };
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    async addToCart(userId: string, addToCartDto: AddToCartDto) {
-        const { productId, quantity = 1 } = addToCartDto;
+    return {
+      user: cart.user,
+      cartId: cart._id,
+      items: cart.items.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+      })),
+    };
+  }
 
-        const productObjectId = new Types.ObjectId(productId);
+  async addToCart(userId: string, addToCartDto: AddToCartDto) {
+    const { productId, quantity = 1 } = addToCartDto;
 
-        let cart = await this.cartModel.findOne({ user: userId });
+    const productObjectId = new Types.ObjectId(productId);
 
-        if (!cart) {
-            cart = await this.cartModel.create({
-                user: userId,
-                items: [{ product: productId, quantity }],
-            })
-            await cart.save();
+    let cart = await this.cartModel.findOne({ user: userId });
 
-        } else {
-            const existingItem = cart.items.find(item => item.product.toString() === productId);
+    if (!cart) {
+      cart = await this.cartModel.create({
+        user: userId,
+        items: [{ product: productId, quantity }],
+      });
+      await cart.save();
+    } else {
+      const existingItem = cart.items.find(
+        item => item.product.toString() === productId,
+      );
 
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.items.push({ product: productObjectId, quantity });
-            }
-        }
-
-        await cart.save();
-
-        return { message: 'Items added to cart successfully' };
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.items.push({ product: productObjectId, quantity });
+      }
     }
 
-    async removeFromCart(userId: string, productId: string) {
-        const cart = await this.cartModel.findOne({ user: userId });
+    await cart.save();
 
-        if (!cart) {
-            throw new AppError(
-                `cart does not exist or you have no cart`,
-                HttpStatus.NOT_FOUND
-            );
-        }
+    return { message: 'Items added to cart successfully' };
+  }
 
-        cart.items = cart.items.filter(
-            (item) => item.product.toString() !== productId,
-        );
+  async removeFromCart(userId: string, productId: string) {
+    const cart = await this.cartModel.findOne({ user: userId });
 
-        cart.save();
-
-        return { message: 'Item removed from cart successfully' };
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
     }
+
+    cart.items = cart.items.filter(
+      item => item.product.toString() !== productId,
+    );
+
+    cart.save();
+
+    return { message: 'Item removed from cart successfully' };
+  }
 }
