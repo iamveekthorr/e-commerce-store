@@ -4,6 +4,7 @@ import { AppError } from "~/common/app-error.common";
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { Order } from "../schema/order.schema";
 import { OrderStatusDTO } from "../dto/status.dto";
+import APIFeatures from "~/common/api-features.service";
 
 
 @Injectable()
@@ -15,8 +16,8 @@ export class OrderService {
     ) {
     }
 
-    async getAllOrders() {
-        const orders = await this.orderModel
+    async getAllOrders(queryString: any) {
+        const orderQuery = this.orderModel
             .find()
             .populate({
                 path: 'items.product',
@@ -24,7 +25,17 @@ export class OrderService {
             })
             .populate('items.quantity');
 
-        return orders;
+        const apiFeatures = new APIFeatures(orderQuery, queryString)
+        apiFeatures.filter().sort().limitFields().paginate();
+
+        const orders = await apiFeatures.query;
+
+        const totalCount = await this.orderModel.countDocuments(apiFeatures.q);
+
+        return {
+            orders,
+            totalCount,
+        };
     }
 
     async getOrderById(orderId: string) {

@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { SCHEMA_OPTIONS } from '~/common/constants';
 import { OrderStatus } from '../enum/status.enum';
 
-export type OrderDocument = Order & Document;
+export type OrderDocument = HydratedDocument<Order>;
 
 
 @Schema({
@@ -14,6 +14,8 @@ export type OrderDocument = Order & Document;
     },
 })
 export class Order {
+
+    id :string;
     @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
     user: Types.ObjectId;
 

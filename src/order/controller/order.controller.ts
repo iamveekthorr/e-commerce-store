@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Query, UseGuards } from "@nestjs/common";
 import { Roles } from "~/auth/decorators/roles.decorator";
 import { Role } from "~/auth/role.enum";
 import { JwtAuthGuard } from "~/auth/guards/auth.guard";
@@ -17,8 +17,8 @@ export class OrderController {
     }
 
     @Get()
-    async getAllOrders() {
-        return this.orderService.getAllOrders();
+    async getAllOrders(@Query() queryString: any) {
+        return this.orderService.getAllOrders(queryString);
     }
 
     @Get(':orderId')
