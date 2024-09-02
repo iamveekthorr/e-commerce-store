@@ -3,21 +3,21 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cart } from '../schema/cart.schema';
 import { AppError } from '~/common/app-error.common';
-import { AddToCartDto } from '../dto/addToCart.dto';
-import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 import { Order } from '~/order/schema/order.schema';
 import { Product } from '~/products/schema/product.schema';
 import { CartCheckOutDTO } from '../dto/checkout.dto';
+import { AddToCartDto } from '../dto/addToCart.dto';
+import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 
 @Injectable()
 export class CartService {
     constructor(
         @InjectModel(Cart.name)
-        private cartModel: Model<Cart>,
+        private readonly cartModel: Model<Cart>,
         @InjectModel(Order.name)
-        private orderModel: Model<Order>,
+        private readonly orderModel: Model<Order>,
         @InjectModel(Product.name)
-        private productModel: Model<Product>,
+        private readonly productModel: Model<Product>,
     ) { }
 
 
@@ -163,7 +163,7 @@ export class CartService {
 
             const order = await this.orderModel.create({
                 user: userId,
-                cartItems: cart.items,
+                items: cart.items,
                 shippingAddress: shippingAddress,
                 totalCost: cart.totalCartPrice
             });
@@ -201,7 +201,7 @@ export class CartService {
     }
 
 
-    private async calculateTotalCost(cart) {
+    private async calculateTotalCost(cart: Cart) {
         let totalPrice = 0;
 
         for (const item of cart.items) {
@@ -211,8 +211,8 @@ export class CartService {
                 totalPrice += item.quantity * product.price;
             } else {
                 throw new AppError(
-                    `Product not found for item with ID: ${item.product}`,
-                    HttpStatus.INTERNAL_SERVER_ERROR
+                    `Product not found `,
+                    HttpStatus.NOT_FOUND
                 );
             }
         }

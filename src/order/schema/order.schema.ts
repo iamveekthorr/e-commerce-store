@@ -1,14 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { SCHEMA_OPTIONS } from '~/common/constants';
+import { OrderStatus } from '../enum/status.enum';
 
 export type OrderDocument = Order & Document;
 
-export enum OrderStatus {
-    PENDING = 'pending',
-    COMPLETED = 'completed',
-    CANCELLED = 'cancelled',
-}
 
 @Schema({
     timestamps: true,
