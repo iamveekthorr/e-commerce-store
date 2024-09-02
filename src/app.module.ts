@@ -38,7 +38,10 @@ import { OrderModule } from './order/order.module';
     StoreModule,
     ProductModule,
     CartModule,
+<<<<<<< HEAD
     OrderModule,
+=======
+>>>>>>> main
   ],
   providers: [
     {
@@ -53,4 +56,4 @@ import { OrderModule } from './order/order.module';
     JwtService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -11,6 +11,7 @@ import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 
 @Injectable()
 export class CartService {
+<<<<<<< HEAD
     constructor(
         @InjectModel(Cart.name)
         private readonly cartModel: Model<Cart>,
@@ -43,13 +44,39 @@ export class CartService {
                 quantity: item.quantity,
             })),
         };
+=======
+  constructor(
+    @InjectModel(Cart.name)
+    private cartModel: Model<Cart>,
+  ) {}
+
+  async getCart(userId: string) {
+    const cart = await this.cartModel
+      .findOne({ user: userId })
+      .populate('items.product');
+
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
+>>>>>>> main
     }
 
-    async addToCart(userId: string, addToCartDto: AddToCartDto) {
-        const { productId, quantity = 1 } = addToCartDto;
+    return {
+      user: cart.user,
+      cartId: cart._id,
+      items: cart.items.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+      })),
+    };
+  }
 
-        const productObjectId = new Types.ObjectId(productId);
+  async addToCart(userId: string, addToCartDto: AddToCartDto) {
+    const { productId, quantity = 1 } = addToCartDto;
 
+<<<<<<< HEAD
         let cart = await this.cartModel
             .findOne({ user: userId })
 
@@ -59,10 +86,24 @@ export class CartService {
                 user: userId,
                 items: [{ product: productId, quantity }],
             })
+=======
+    const productObjectId = new Types.ObjectId(productId);
 
-        } else {
-            const existingItem = cart.items.find(item => item.product.toString() === productId);
+    let cart = await this.cartModel.findOne({ user: userId });
+>>>>>>> main
 
+    if (!cart) {
+      cart = await this.cartModel.create({
+        user: userId,
+        items: [{ product: productId, quantity }],
+      });
+      await cart.save();
+    } else {
+      const existingItem = cart.items.find(
+        item => item.product.toString() === productId,
+      );
+
+<<<<<<< HEAD
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
@@ -80,14 +121,21 @@ export class CartService {
         const cart = await this.cartModel
             .findOne({ user: userId });
 
+=======
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.items.push({ product: productObjectId, quantity });
+      }
+    }
 
-        if (!cart) {
-            throw new AppError(
-                `cart does not exist or you have no cart`,
-                HttpStatus.NOT_FOUND
-            );
-        }
+    await cart.save();
+>>>>>>> main
 
+    return { message: 'Items added to cart successfully' };
+  }
+
+<<<<<<< HEAD
         cart.items = cart.items.filter(
             (item) => item.product.toString() !== productId,
         );
@@ -95,28 +143,39 @@ export class CartService {
         await this.calculateTotalCost(cart);
         await cart.save();
         return { message: 'Item removed from cart successfully' };
+=======
+  async removeFromCart(userId: string, productId: string) {
+    const cart = await this.cartModel.findOne({ user: userId });
+
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
+>>>>>>> main
     }
 
-    async updateCartItemQuantity(userId: string, update: UpdateCartItemQuantityDTO) {
-        const { productId, quantity } = update;
+    cart.items = cart.items.filter(
+      item => item.product.toString() !== productId,
+    );
 
-        if (quantity < 1) {
-            throw new AppError(
-                'Invalid quantity. Quantity must be greater than or equal to 1.',
-                HttpStatus.BAD_REQUEST
-            );
-        }
+    cart.save();
 
+<<<<<<< HEAD
         const cart = await this.cartModel
             .findOne({ user: userId });
+=======
+    return { message: 'Item removed from cart successfully' };
+  }
+>>>>>>> main
 
-        if (!cart) {
-            throw new AppError(
-                `cart does not exist or you have no cart`,
-                HttpStatus.NOT_FOUND
-            );
-        }
+  async updateCartItemQuantity(
+    userId: string,
+    update: UpdateCartItemQuantityDTO,
+  ) {
+    const { productId, quantity } = update;
 
+<<<<<<< HEAD
         const itemIndex = cart.items.findIndex(
             (item) => item.product._id.toString() === productId
         );
@@ -222,4 +281,41 @@ export class CartService {
         return totalPrice;
 
     }
+=======
+    if (quantity < 1) {
+      throw new AppError(
+        'Invalid quantity. Quantity must be greater than or equal to 1.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const cart = await this.cartModel
+      .findOne({ user: userId })
+      .populate('items.product');
+
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const itemIndex = cart.items.findIndex(
+      item => item.product._id.toString() === productId,
+    );
+
+    if (itemIndex > -1) {
+      cart.items[itemIndex].quantity = quantity;
+    } else {
+      throw new AppError(
+        `Product not found in the cart.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    await cart.save();
+
+    return { message: 'Item quantity updated successfully' };
+  }
+>>>>>>> main
 }

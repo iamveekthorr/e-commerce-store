@@ -22,7 +22,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-  ) { }
+  ) {}
 
   private async generateTokens(auth: JWTPayload) {
     const [accessToken, refreshToken] = await Promise.all([

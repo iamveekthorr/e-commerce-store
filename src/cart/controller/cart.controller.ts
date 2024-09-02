@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Body, UseGuards, Patch, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Delete,
+  Param,
+} from '@nestjs/common';
 
 import { User } from '~/users/schema/users.schema';
 import { JwtAuthGuard } from '~/auth/guards/auth.guard';
@@ -9,15 +17,19 @@ import { RolesGuard } from '~/auth/guards/role.guard';
 
 import { AddToCartDto } from '../dto/addToCart.dto';
 import { CartService } from '../service/cart.service';
+<<<<<<< HEAD
 import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 import { CartCheckOutDTO } from '../dto/checkout.dto';
+=======
+>>>>>>> main
 
 @Controller('carts')
 @Roles(Role.USER)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CartController {
-    constructor(private readonly cartService: CartService) { }
+  constructor(private readonly cartService: CartService) {}
 
+<<<<<<< HEAD
     @Post()
     addToCart(
         @Body() addToCartDto: AddToCartDto,
@@ -54,4 +66,23 @@ export class CartController {
     ) {
         return this.cartService.removeFromCart(user.id, productId);
     }
+=======
+  @Post()
+  addToCart(@Body() addToCartDto: AddToCartDto, @CurrentUser() user: User) {
+    return this.cartService.addToCart(user.id, addToCartDto);
+  }
+
+  @Get()
+  getUserCart(@CurrentUser() user: User) {
+    return this.cartService.getCart(user.id);
+  }
+
+  @Delete(':productId')
+  removeFromCart(
+    @Param('productId') productId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.cartService.removeFromCart(user.id, productId);
+  }
+>>>>>>> main
 }
