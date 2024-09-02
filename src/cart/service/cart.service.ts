@@ -165,10 +165,9 @@ export class CartService {
 
             await this.updateProductQuantities(cart.items);
 
-            console.log(cart.totalCartPrice)
             const order = await this.orderModel.create({
                 user: userId,
-                cartItems: cart.items,
+                items: cart.items,
                 shippingAddress: shippingAddress,
                 totalCost: cart.totalCartPrice
             });
