@@ -10,7 +10,7 @@ import { RolesGuard } from '~/auth/guards/role.guard';
 import { AddToCartDto } from '../dto/addToCart.dto';
 import { CartService } from '../service/cart.service';
 import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
-import { CartCheckOutDTO } from '~/order/order.dto';
+import { CartCheckOutDTO } from '../dto/checkout.dto';
 
 @Controller('carts')
 @Roles(Role.USER)

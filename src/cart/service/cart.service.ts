@@ -6,8 +6,8 @@ import { AppError } from '~/common/app-error.common';
 import { AddToCartDto } from '../dto/addToCart.dto';
 import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 import { Order } from '~/order/schema/order.schema';
-import { CartCheckOutDTO } from '~/order/order.dto';
 import { Product } from '~/products/schema/product.schema';
+import { CartCheckOutDTO } from '../dto/checkout.dto';
 
 @Injectable()
 export class CartService {
