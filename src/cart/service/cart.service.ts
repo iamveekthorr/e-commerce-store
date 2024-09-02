@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import { Cart } from '../schema/cart.schema';
 import { AppError } from '~/common/app-error.common';
 import { AddToCartDto } from '../dto/addToCart.dto';
+import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 
 @Injectable()
 export class CartService {
@@ -81,5 +82,47 @@ export class CartService {
     cart.save();
 
     return { message: 'Item removed from cart successfully' };
+  }
+
+  async updateCartItemQuantity(
+    userId: string,
+    update: UpdateCartItemQuantityDTO,
+  ) {
+    const { productId, quantity } = update;
+
+    if (quantity < 1) {
+      throw new AppError(
+        'Invalid quantity. Quantity must be greater than or equal to 1.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const cart = await this.cartModel
+      .findOne({ user: userId })
+      .populate('items.product');
+
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const itemIndex = cart.items.findIndex(
+      item => item.product._id.toString() === productId,
+    );
+
+    if (itemIndex > -1) {
+      cart.items[itemIndex].quantity = quantity;
+    } else {
+      throw new AppError(
+        `Product not found in the cart.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    await cart.save();
+
+    return { message: 'Item quantity updated successfully' };
   }
 }
