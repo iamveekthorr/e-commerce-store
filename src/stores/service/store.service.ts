@@ -7,13 +7,14 @@ import { AppError } from '~/common/app-error.common';
 import { Store } from '../schema/store.schema';
 import { CreateStoreDTO } from '../dto/create-store.dto';
 import { UpdateStoreDTO } from '../dto/update-store.dto';
+import APIFeatures from '~/common/api-features.service';
 
 @Injectable()
 export class StoreService {
   constructor(
     @InjectModel(Store.name)
     private readonly storeModel: Model<Store>,
-  ) {}
+  ) { }
 
   async createStore(ownerId: string, createStoreDto: CreateStoreDTO) {
     const storeCount = await this.storeModel.countDocuments({ owner: ownerId });
@@ -40,9 +41,24 @@ export class StoreService {
   /**
    * only for super-admin
    */
-  async getAllStores() {
-    const stores = await this.storeModel.find();
-    return stores;
+  async getAllStores(queryString: any) {
+    const storeQuery = this.storeModel.find()
+      .populate({
+        path: 'owner',
+        select: 'email'
+      })
+
+    const apiFeatures = new APIFeatures(storeQuery, queryString)
+    apiFeatures.filter().sort().limitFields().paginate();
+
+    const stores = await apiFeatures.query;
+
+    const totalCount = await this.storeModel.countDocuments(apiFeatures.q);
+
+    return {
+      stores,
+      totalCount,
+    };
   }
 
   /**

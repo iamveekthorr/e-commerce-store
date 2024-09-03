@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '~/auth/guards/auth.guard';
@@ -42,8 +43,8 @@ export class StoreController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SUPER_ADMIN)
-  getAllStores() {
-    return this.storeService.getAllStores();
+  getAllStores(@Query() queryString: any) {
+    return this.storeService.getAllStores(queryString);
   }
 
   @Patch()
