@@ -16,6 +16,7 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { StoreModule } from './stores/store.module';
 import { ProductModule } from './products/product.module';
 import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { CartModule } from './cart/cart.module';
     StoreModule,
     ProductModule,
     CartModule,
+    OrderModule,
   ],
   providers: [
     {
@@ -51,4 +53,4 @@ import { CartModule } from './cart/cart.module';
     JwtService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

@@ -13,6 +13,7 @@ export type ProductDocument = HydratedDocument<Product>;
   },
 })
 export class Product {
+  id: string;
   @Prop({ required: true, type: String })
   productName: string;
 
