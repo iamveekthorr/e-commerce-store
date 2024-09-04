@@ -26,9 +26,9 @@ export class UserController {
     return this.userService.getUserById(user.id);
   }
 
-  @Get('')
+  @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   getAllUsers(@Query() queryString: any) {
     return this.userService.getAllUsers(queryString);
   }
