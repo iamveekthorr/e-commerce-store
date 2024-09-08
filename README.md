@@ -23,6 +23,17 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
+This E-commerce API is designed for stores to have online presence and for online shopping. The platform allows users to browse products, add items to their cart, and proceed to checkout. It includes user authentication, role-based access control (e.g., RETAIL_ADMIN,SUPER_ADMIN and USER).
+
+The application is built using modern web technologies, including, mongodb(mongoose) for data storage
+
+Features
+
+User Authentication: Secure user sign-up, login, and profile management using JWT.
+Role-based Access Control: RETAIL_ADMIN can manage products in their respective store(s), while users can browse and purchase products.
+Product Management: RETAIL_ADMIN can create, update, delete, and view products.
+Shopping Cart: Users can add products to their cart and proceed to checkout.
+Order Management: Users can view their order history, and admins can manage orders.
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
