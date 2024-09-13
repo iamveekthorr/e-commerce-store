@@ -24,6 +24,62 @@
 
 ## Description
 
+This E-commerce API is designed for stores to have online presence and for online shopping. The platform allows users to browse products, add items to their cart, and proceed to checkout. It includes user authentication, role-based access control (e.g., RETAIL_ADMIN,SUPER_ADMIN and USER).
+
+The application is built using modern web technologies, including, mongodb(mongoose) for data storage
+
+Features
+
+User Authentication: Secure user sign-up, login, and profile management using JWT.
+Role-based Access Control: RETAIL_ADMIN can manage products in their respective store(s), while users can browse and purchase products.
+Product Management: RETAIL_ADMIN can create, update, delete, and view products.
+Shopping Cart: Users can add products to their cart and proceed to checkout.
+Order Management: Users can view their order history, and admins can manage orders.
+
+Routes Overview
+
+User Authentication:
+POST /auth/create-account: craete a new user.
+POST /auth/login: User login and JWT generation.
+
+Product routes:
+
+POST /products: Add a new product to the store.
+PATCH /products/:productId: Update a product's details.
+DELETE /products/:productId: Delete a product.
+GET /products/:productId: Get a product.
+GET /products: View all products.
+GET /products/my/:storeId: Allows a retail_admin view products in their store.
+
+Cart routes:
+
+POST /carts: Add product to cart.
+GET /carts: View cart items.
+DELETE /carts/:productId: Remove item from the cart.
+POST /carts/checkout: Place an order.
+PATCH /carts/ : update product quantity in cart.
+
+Order routes:
+
+GET /orders: View all orders.
+GET /orders/:orderId: View order details.
+PATCH /orders/:orderId/status: Update order status
+
+Store routes:
+
+GET /stores: View all stores.
+GET /stores/my: View my store(RETAIL_ADMIN).
+PATCH /stores/: Update my store
+DELETE /stores/:storeId: Delete a store.
+
+User routes:
+
+GET /users: View all users.
+GET /users/profile/me: View my profile.
+GET /users/:id: Get a user.
+
+
+
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
