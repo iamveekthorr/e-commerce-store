@@ -27,7 +27,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mongoose": "^10.0.10",
     "@nestjs/passport": "^10.0.3",
-    "@nestjs/platform-express": "^10.4.1",
+    "@nestjs/platform-express": "^10.4.4",
     "@types/compression": "^1.7.5",
     "@types/morgan": "^1.9.9",
     "bcrypt": "^5.1.1",
