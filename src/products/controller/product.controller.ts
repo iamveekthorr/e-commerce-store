@@ -1,13 +1,13 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Patch,
-    Post,
-    Query,
-    UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '~/auth/guards/auth.guard';
@@ -23,62 +23,67 @@ import { UpdateProductDTO } from '../dto/update-product.dto';
 
 @Controller('products')
 export class ProductController {
-    constructor(private readonly productService: ProductService) { }
+  constructor(private readonly productService: ProductService) {}
 
-    @Post()
-    @Roles(Role.RETAIL_ADMIN)
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    createProduct(
-        @Body() createProductDto: CreateProductDTO,
-        @CurrentUser() user: User,
-    ) {
-        return this.productService.createProduct(user.id, createProductDto);
-    }
+  @Post()
+  @Roles(Role.RETAIL_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  createProduct(
+    @Body() createProductDto: CreateProductDTO,
+    @CurrentUser() user: User,
+  ) {
+    return this.productService.createProduct(user.id, createProductDto);
+  }
 
-    @Get()
-    getAllProducts(@Query() queryString: any) {
-        return this.productService.getAllProducts(queryString);
-    }
+  @Get()
+  getAllProducts(@Query() queryString: any) {
+    return this.productService.getAllProducts(queryString);
+  }
 
-    @Get(':productId')
-    getProductById(@Param('productId') productId: string) {
-        return this.productService.getProductById(productId);
-    }
+  @Get('/recommendations/:id')
+  getRecommendations(@Param('id') id: string) {
+    return this.productService.getRecommendations(id);
+  }
 
-    @Get('my/:storeId')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.RETAIL_ADMIN)
-    getProductsInMyStore(
-        @CurrentUser() user: User,
-        @Param('storeId') storeId: string,
-    ) {
-        return this.productService.getProductsByStoreId(user.id, storeId);
-    }
+  @Get(':productId')
+  getProductById(@Param('productId') productId: string) {
+    return this.productService.getProductById(productId);
+  }
 
-    @Patch()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.RETAIL_ADMIN)
-    updateMyProduct(
-        @CurrentUser() user: User,
-        @Body() updateDto: UpdateProductDTO,
-    ) {
-        return this.productService.updateMyProduct(user.id, updateDto);
-    }
+  @Get('my/:storeId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.RETAIL_ADMIN)
+  getProductsInMyStore(
+    @CurrentUser() user: User,
+    @Param('storeId') storeId: string,
+  ) {
+    return this.productService.getProductsByStoreId(user.id, storeId);
+  }
 
-    @Delete('my/:productId')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.RETAIL_ADMIN)
-    deleteMyProduct(
-        @CurrentUser() user: User,
-        @Param('productId') productId: string,
-    ) {
-        return this.productService.deleteMyProduct(user.id, productId);
-    }
+  @Patch()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.RETAIL_ADMIN)
+  updateMyProduct(
+    @CurrentUser() user: User,
+    @Body() updateDto: UpdateProductDTO,
+  ) {
+    return this.productService.updateMyProduct(user.id, updateDto);
+  }
 
-    @Delete(':productId')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.SUPER_ADMIN)
-    deleteProduct(@Param('productId') productId: string) {
-        return this.productService.deleteProduct(productId);
-    }
+  @Delete('my/:productId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.RETAIL_ADMIN)
+  deleteMyProduct(
+    @CurrentUser() user: User,
+    @Param('productId') productId: string,
+  ) {
+    return this.productService.deleteMyProduct(user.id, productId);
+  }
+
+  @Delete(':productId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN)
+  deleteProduct(@Param('productId') productId: string) {
+    return this.productService.deleteProduct(productId);
+  }
 }
