@@ -53,4 +53,4 @@ import { OrderModule } from './order/order.module';
     JwtService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

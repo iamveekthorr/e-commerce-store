@@ -11,219 +11,209 @@ import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 
 @Injectable()
 export class CartService {
+  constructor(
+    @InjectModel(Cart.name)
+    private readonly cartModel: Model<Cart>,
+    @InjectModel(Product.name)
+    private readonly productModel: Model<Product>,
+    @InjectModel(Order.name)
+    private readonly orderModel: Model<Order>,
+  ) {}
 
-    constructor(
-        @InjectModel(Cart.name)
-        private readonly cartModel: Model<Cart>,
-        @InjectModel(Product.name)
-        private readonly productModel: Model<Product>,
-        @InjectModel(Order.name)
-        private readonly orderModel: Model<Order>,
-    ) { }
+  async getCart(userId: string) {
+    const cart = await this.cartModel
+      .findOne({ user: userId })
+      .populate('items.product');
 
-    async getCart(userId: string) {
-        const cart = await this.cartModel
-            .findOne({ user: userId })
-            .populate('items.product');
-
-        if (!cart) {
-            throw new AppError(
-                `cart does not exist or you have no cart`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
-
-        return {
-            totalCost: cart.totalCartPrice,
-            user: cart.user,
-            cartId: cart._id,
-            items: cart.items.map(item => ({
-                product: item.product,
-                quantity: item.quantity,
-            })),
-        };
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    async addToCart(userId: string, addToCartDto: AddToCartDto) {
-        const { productId, quantity = 1 } = addToCartDto;
+    return {
+      totalCost: cart.totalCartPrice,
+      user: cart.user,
+      cartId: cart._id,
+      items: cart.items.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+      })),
+    };
+  }
 
-        const productObjectId = new Types.ObjectId(productId);
+  async addToCart(userId: string, addToCartDto: AddToCartDto) {
+    const { productId, quantity = 1 } = addToCartDto;
 
-        let cart = await this.cartModel.findOne({ user: userId });
+    const productObjectId = new Types.ObjectId(productId);
 
-        if (!cart) {
-            cart = await this.cartModel.create({
-                user: userId,
-                items: [{ product: productId, quantity }],
-            });
-            await cart.save();
-        } else {
-            const existingItem = cart.items.find(
-                item => item.product.toString() === productId,
-            );
+    let cart = await this.cartModel.findOne({ user: userId });
 
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.items.push({ product: productObjectId, quantity });
-            }
-        }
-        cart.totalCartPrice = await this.calculateTotalCost(cart);
+    if (!cart) {
+      cart = await this.cartModel.create({
+        user: userId,
+        items: [{ product: productId, quantity }],
+      });
+      await cart.save();
+    } else {
+      const existingItem = cart.items.find(
+        item => item.product.toString() === productId,
+      );
 
-        await cart.save();
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.items.push({ product: productObjectId, quantity });
+      }
+    }
+    cart.totalCartPrice = await this.calculateTotalCost(cart);
 
-        return { message: 'Items added to cart successfully' };
+    await cart.save();
+
+    return { message: 'Items added to cart successfully' };
+  }
+
+  async removeFromCart(userId: string, productId: string) {
+    const cart = await this.cartModel.findOne({ user: userId });
+
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    async removeFromCart(userId: string, productId: string) {
-        const cart = await this.cartModel.findOne({ user: userId });
+    cart.items = cart.items.filter(
+      item => item.product.toString() !== productId,
+    );
 
-        if (!cart) {
-            throw new AppError(
-                `cart does not exist or you have no cart`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
+    cart.totalCartPrice = await this.calculateTotalCost(cart);
 
-        cart.items = cart.items.filter(
-            item => item.product.toString() !== productId,
+    cart.save();
+
+    return { message: 'Item removed from cart successfully' };
+  }
+
+  async updateCartItemQuantity(
+    userId: string,
+    update: UpdateCartItemQuantityDTO,
+  ) {
+    const { productId, quantity } = update;
+
+    if (quantity < 1) {
+      throw new AppError(
+        'Invalid quantity. Quantity must be greater than or equal to 1.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const cart = await this.cartModel
+      .findOne({ user: userId })
+      .populate('items.product');
+
+    if (!cart) {
+      throw new AppError(
+        `cart does not exist or you have no cart`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const itemIndex = cart.items.findIndex(
+      item => item.product._id.toString() === productId,
+    );
+
+    if (itemIndex > -1) {
+      cart.items[itemIndex].quantity = quantity;
+    } else {
+      throw new AppError(
+        `Product not found in the cart.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    cart.totalCartPrice = await this.calculateTotalCost(cart);
+    await cart.save();
+
+    return { message: 'Item quantity updated successfully' };
+  }
+
+  async checkoutCart(userId: string, orderDTO: CartCheckOutDTO) {
+    const { cartId, shippingAddress } = orderDTO;
+
+    const session = await this.cartModel.startSession();
+    session.startTransaction();
+
+    try {
+      const cart = await this.cartModel
+        .findOne({ _id: cartId })
+        .populate('items.product');
+      if (!cart) {
+        throw new AppError(
+          `cart does not exist or you have no cart`,
+          HttpStatus.NOT_FOUND,
         );
+      }
 
-        cart.totalCartPrice = await this.calculateTotalCost(cart);
+      /**
+       * if paymemt service is available
+       */
 
-        cart.save();
+      await this.updateProductQuantities(cart.items);
 
-        return { message: 'Item removed from cart successfully' };
+      const order = await this.orderModel.create({
+        user: userId,
+        items: cart.items,
+        shippingAddress: shippingAddress,
+        totalCost: cart.totalCartPrice,
+      });
+
+      await order.save();
+
+      await this.cartModel.findByIdAndDelete(cartId);
+
+      return { message: 'Cart checkout successful', orderId: order._id };
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
     }
+  }
 
-    async updateCartItemQuantity(
-        userId: string,
-        update: UpdateCartItemQuantityDTO,
-    ) {
-        const { productId, quantity } = update;
+  private async calculateTotalCost(cart) {
+    let totalPrice = 0;
 
-        if (quantity < 1) {
-            throw new AppError(
-                'Invalid quantity. Quantity must be greater than or equal to 1.',
-                HttpStatus.BAD_REQUEST,
-            );
-        }
+    for (const item of cart.items) {
+      const product = await this.productModel.findById(item.product);
 
-        const cart = await this.cartModel
-            .findOne({ user: userId })
-            .populate('items.product');
-
-        if (!cart) {
-            throw new AppError(
-                `cart does not exist or you have no cart`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
-
-        const itemIndex = cart.items.findIndex(
-            item => item.product._id.toString() === productId,
-        );
-
-        if (itemIndex > -1) {
-            cart.items[itemIndex].quantity = quantity;
-        } else {
-            throw new AppError(
-                `Product not found in the cart.`,
-                HttpStatus.NOT_FOUND,
-            );
-        }
-
-        cart.totalCartPrice = await this.calculateTotalCost(cart);
-        await cart.save();
-
-        return { message: 'Item quantity updated successfully' };
+      if (product) {
+        totalPrice += item.quantity * product.price;
+      } else {
+        throw new AppError(`Product not found`, HttpStatus.NOT_FOUND);
+      }
     }
+    return totalPrice;
+  }
 
+  private async updateProductQuantities(
+    items: { product: Types.ObjectId; quantity: number }[],
+  ) {
+    for (const item of items) {
+      const product = await this.productModel.findById(item.product);
 
-    async checkoutCart(userId: string, orderDTO: CartCheckOutDTO) {
-
-        const { cartId, shippingAddress } = orderDTO;
-
-        const session = await this.cartModel.startSession();
-        session.startTransaction();
-
-        try {
-            const cart = await this.cartModel
-                .findOne({ _id: cartId })
-                .populate('items.product');
-            if (!cart) {
-                throw new AppError(
-                    `cart does not exist or you have no cart`,
-                    HttpStatus.NOT_FOUND
-                );
-
-            }
-
-            /**
-             * if paymemt service is available
-             */
-
-            await this.updateProductQuantities(cart.items);
-
-            const order = await this.orderModel.create({
-                user: userId,
-                items: cart.items,
-                shippingAddress: shippingAddress,
-                totalCost: cart.totalCartPrice
-            });
-
-            await order.save();
-
-
-            await this.cartModel.findByIdAndDelete(cartId);
-
-            return { message: 'Cart checkout successful', orderId: order._id };
-
-        } catch (error) {
-            await session.abortTransaction();
-            throw error;
-        } finally {
-            session.endSession();
+      if (product) {
+        if (product.quantity < item.quantity) {
+          throw new AppError(
+            `Insufficient stock for product: ${product.productName}`,
+            HttpStatus.BAD_REQUEST,
+          );
         }
+
+        product.quantity -= item.quantity;
+
+        await product.save();
+      }
     }
-
-    private async calculateTotalCost(cart) {
-        let totalPrice = 0;
-
-        for (const item of cart.items) {
-            const product = await this.productModel.findById(item.product);
-
-            if (product) {
-                totalPrice += item.quantity * product.price;
-            } else {
-                throw new AppError(
-                    `Product not found`,
-                    HttpStatus.NOT_FOUND
-                );
-            }
-        }
-        return totalPrice;
-    }
-
-    private async updateProductQuantities(items: { product: Types.ObjectId; quantity: number }[]) {
-        for (const item of items) {
-            const product = await this.productModel.findById(item.product);
-
-            if (product) {
-                if (product.quantity < item.quantity) {
-                    throw new AppError(
-                        `Insufficient stock for product: ${product.productName}`,
-                        HttpStatus.BAD_REQUEST
-                    );
-                }
-
-                product.quantity -= item.quantity;
-
-                await product.save();
-            }
-        }
-    }
-
+  }
 }
-
-

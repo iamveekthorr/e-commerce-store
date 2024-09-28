@@ -14,7 +14,7 @@ export class StoreService {
   constructor(
     @InjectModel(Store.name)
     private readonly storeModel: Model<Store>,
-  ) { }
+  ) {}
 
   async createStore(ownerId: string, createStoreDto: CreateStoreDTO) {
     const storeCount = await this.storeModel.countDocuments({ owner: ownerId });
@@ -42,13 +42,12 @@ export class StoreService {
    * only for super-admin
    */
   async getAllStores(queryString: any) {
-    const storeQuery = this.storeModel.find()
-      .populate({
-        path: 'owner',
-        select: 'email'
-      })
+    const storeQuery = this.storeModel.find().populate({
+      path: 'owner',
+      select: 'email',
+    });
 
-    const apiFeatures = new APIFeatures(storeQuery, queryString)
+    const apiFeatures = new APIFeatures(storeQuery, queryString);
     apiFeatures.filter().sort().limitFields().paginate();
 
     const stores = await apiFeatures.query;

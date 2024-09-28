@@ -22,7 +22,7 @@ import { UpdateStoreDTO } from '../dto/update-store.dto';
 
 @Controller('stores')
 export class StoreController {
-  constructor(private readonly storeService: StoreService) { }
+  constructor(private readonly storeService: StoreService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -60,10 +60,7 @@ export class StoreController {
   @Delete(':storeId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.RETAIL_ADMIN)
-  deleteMyStore(
-    @CurrentUser() user: User,
-    @Param('storeId') storeId: string,
-  ) {
+  deleteMyStore(@CurrentUser() user: User, @Param('storeId') storeId: string) {
     return this.storeService.deleteMyStore(user.id, storeId);
   }
 }

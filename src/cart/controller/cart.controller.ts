@@ -1,12 +1,12 @@
 import {
-    Controller,
-    Post,
-    Get,
-    Body,
-    UseGuards,
-    Delete,
-    Param,
-    Patch,
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Delete,
+  Param,
+  Patch,
 } from '@nestjs/common';
 
 import { User } from '~/users/schema/users.schema';
@@ -22,45 +22,39 @@ import { CartService } from '../service/cart.service';
 import { UpdateCartItemQuantityDTO } from '../dto/updateProductQuantity.dto';
 import { CartCheckOutDTO } from '../dto/checkout.dto';
 
-
 @Controller('carts')
 @Roles(Role.USER)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CartController {
-    constructor(private readonly cartService: CartService) { }
+  constructor(private readonly cartService: CartService) {}
 
-    @Post()
-    addToCart(@Body() addToCartDto: AddToCartDto, @CurrentUser() user: User) {
-        return this.cartService.addToCart(user.id, addToCartDto);
-    }
+  @Post()
+  addToCart(@Body() addToCartDto: AddToCartDto, @CurrentUser() user: User) {
+    return this.cartService.addToCart(user.id, addToCartDto);
+  }
 
-    @Get()
-    getUserCart(@CurrentUser() user: User) {
-        return this.cartService.getCart(user.id);
-    }
+  @Get()
+  getUserCart(@CurrentUser() user: User) {
+    return this.cartService.getCart(user.id);
+  }
 
-    @Delete(':productId')
-    removeFromCart(
-        @Param('productId') productId: string,
-        @CurrentUser() user: User,
-    ) {
-        return this.cartService.removeFromCart(user.id, productId);
-    }
+  @Delete(':productId')
+  removeFromCart(
+    @Param('productId') productId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.cartService.removeFromCart(user.id, productId);
+  }
 
-
-    @Post('checkout')
-    checkoutCart(
-        @Body() orderDTO: CartCheckOutDTO,
-        @CurrentUser() user: User
-    ) {
-        return this.cartService.checkoutCart(user.id, orderDTO);
-    }
-    @Patch()
-    updateCartItemQuantity(
-        @Body() addToCartDto: UpdateCartItemQuantityDTO,
-        @CurrentUser() user: User
-    ) {
-        return this.cartService.updateCartItemQuantity(user.id, addToCartDto);
-    }
-
+  @Post('checkout')
+  checkoutCart(@Body() orderDTO: CartCheckOutDTO, @CurrentUser() user: User) {
+    return this.cartService.checkoutCart(user.id, orderDTO);
+  }
+  @Patch()
+  updateCartItemQuantity(
+    @Body() addToCartDto: UpdateCartItemQuantityDTO,
+    @CurrentUser() user: User,
+  ) {
+    return this.cartService.updateCartItemQuantity(user.id, addToCartDto);
+  }
 }

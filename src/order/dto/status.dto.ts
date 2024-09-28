@@ -1,10 +1,8 @@
-import { IsEnum, IsNotEmpty } from "class-validator";
-import { OrderStatus } from "../enum/status.enum";
-
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { OrderStatus } from '../enum/status.enum';
 
 export class OrderStatusDTO {
-
-    @IsNotEmpty()
-    @IsEnum(OrderStatus)
-    status: OrderStatus;
+  @IsNotEmpty()
+  @IsEnum(OrderStatus)
+  status: OrderStatus;
 }

@@ -1,10 +1,10 @@
-import { IsNotEmpty,  IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CartCheckOutDTO {
-    @IsNotEmpty()
-    cartId: string;
+  @IsNotEmpty()
+  cartId: string;
 
-    @IsString()
-    @IsNotEmpty()
-    shippingAddress: string;
+  @IsString()
+  @IsNotEmpty()
+  shippingAddress: string;
 }
